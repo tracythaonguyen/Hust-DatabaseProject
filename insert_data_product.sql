@@ -57,7 +57,7 @@ $$;
 -- INSERT DATA --
 --
 
-select * from product.brands
+select * from product.brands;
 
 -- brand (100)
 

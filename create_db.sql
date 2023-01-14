@@ -68,7 +68,7 @@ CREATE TABLE sales.staffs (
 	city VARCHAR(255),
 	active boolean,
   manager_id BIGINT,
-  PRIMARY KEY (staff_id),
+  PRIMARY KEY (staff_id)
 );
 
 alter table sales.staffs 
