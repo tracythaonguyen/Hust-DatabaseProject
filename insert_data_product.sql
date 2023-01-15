@@ -1,6 +1,6 @@
 -- PROCEDURE new_brand(brand_name)
 -- check brand_name, auto generate brand_id
-
+DROP PROCEDURE IF EXISTS product.new_brand;
 CREATE PROCEDURE product.new_brand(brand_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
@@ -21,6 +21,7 @@ $$;
 
 -- PRECEDURE new_category(category_name)
 
+DROP PROCEDURE IF EXISTS product.new_category;
 CREATE PROCEDURE product.new_category(category_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
@@ -41,14 +42,17 @@ $$;
 
 -- PROCEDURE new_product()
 
+DROP PROCEDURE IF EXISTS product.new_product;
 CREATE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
 DECLARE product_id BIGINT;
 BEGIN
   SELECT COUNT(*)+1 INTO product_id FROM product.products;
-  --INSERT
+  --INSERT TO TABLE product
   INSERT INTO product.products VALUES (product_id, product_name, brand_id, category_id, model_year, list_price);
+  --INSERT TO TABLE STOCK
+  INSERT INTO product.stocks VALUES (product_id, 0);
 END;
 $$;
 
@@ -207,3 +211,5 @@ CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 select * from product.products;
 select * from product.brands;
 select * from product.categories;
+select * from product.stocks;
+

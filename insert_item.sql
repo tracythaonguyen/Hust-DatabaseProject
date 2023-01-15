@@ -79,8 +79,8 @@ CREATE PROCEDURE product.generate_new_item()
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	FOR product_id_input in 1..10 LOOP
-		FOR cnt IN 1..10000 LOOP
+	FOR product_id_input in 1..100 LOOP
+		FOR cnt IN 1..1000 LOOP
     			IF (product_id_input IN (1,2,8))
 				THEN 
 					BEGIN 
@@ -96,7 +96,9 @@ BEGIN
 END;
 $$;
 
+
 BEGIN ;
 CALL product.generate_new_item() ;
 SELECT * FROM product.items;
+SELECT * FROM product.stocks;
 ROLLBACK;
