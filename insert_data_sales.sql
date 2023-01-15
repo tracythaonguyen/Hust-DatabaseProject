@@ -194,7 +194,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 	FOR cnt in 1..50 LOOP
-    	CALL sales.new_staff(random_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),random_active(),NULL);
+    	CALL sales.new_staff(random_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),random_active(),random_manager());
     END LOOP;
 END;
 $$;
@@ -203,4 +203,19 @@ BEGIN;
 CALL sales.generate_new_staff();
 SELECT * from sales.staffs;
 ROLLBACK ;
+
+-- Trung đang làm đoạn này chưa xong thì thấy thảo đần
+-- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
+-- -- Auto generate customer_id
+-- DROP PROCEDURE IF EXISTS sales.new_customer;
+-- CREATE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name varchar(255),pass_word varchar(255))
+-- LANGUAGE plpgsql
+-- AS $$
+-- DECLARE customer_id BIGINT;
+-- BEGIN
+--       SELECT COUNT(*)+1 INTO staff_id FROM sales.staffs;
+-- 	  --INSERT
+-- 	  INSERT INTO sales.staffs VALUES (staff_id,first_name,last_name,phone,email,street,city,active,manager_id);
+-- END;
+-- $$;
 
