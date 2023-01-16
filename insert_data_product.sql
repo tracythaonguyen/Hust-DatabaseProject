@@ -9,9 +9,14 @@ BEGIN
 	IF NOT EXISTS(SELECT * FROM product.brands b WHERE b.brand_name = $1)
 	THEN
 		BEGIN
-			SELECT brand_id+1 INTO brand_ids FROM product.brands ORDER BY brand_id DESC LIMIT 1;
+			SELECT brand_id INTO brand_ids FROM product.brands ORDER BY brand_id DESC LIMIT 1;
 			--INSERT
-			INSERT INTO product.brands VALUES (brand_ids, brand_name);
+			IF brand_ids IS NULL
+			THEN 
+				INSERT INTO product.brands VALUES (1, brand_name);
+			ELSE
+				INSERT INTO product.brands VALUES (brand_ids+1, brand_name);
+			END IF;
 		END;
 	ELSE
 		RAISE NOTICE 'Already have: %', brand_name ;
@@ -30,9 +35,14 @@ BEGIN
 	IF NOT EXISTS(SELECT * FROM product.categories c WHERE c.category_name = $1)
 	THEN
 		BEGIN
-      SELECT category_id+1 INTO category_ids FROM product.categories ORDER BY category_id DESC LIMIT 1;
+      SELECT category_id INTO category_ids FROM product.categories ORDER BY category_id DESC LIMIT 1;
 			--INSERT
-			INSERT INTO product.categories VALUES (category_ids, category_name);
+			IF category_ids IS NULL
+			THEN 
+				INSERT INTO product.categories VALUES (1, category_name);
+			ELSE
+				INSERT INTO product.categories VALUES (category_ids+1, category_name);
+			END IF;
 		END;
 	ELSE
 		RAISE NOTICE 'Already have: %', category_name ;
@@ -48,11 +58,17 @@ LANGUAGE plpgsql
 AS $$
 DECLARE product_ids BIGINT;
 BEGIN
-  SELECT product_id+1 INTO product_ids FROM product.products ORDER BY product_id DESC LIMIT 1;
-  --INSERT TO TABLE product
-  INSERT INTO product.products VALUES (product_ids, product_name, brand_id, category_id, model_year, list_price);
-  --INSERT TO TABLE STOCK
-  INSERT INTO product.stocks VALUES (product_id, 0);
+	SELECT product_id INTO product_ids FROM product.products ORDER BY product_id DESC LIMIT 1;
+		IF product_ids IS NULL
+		THEN 
+			--INSERT TO TABLE product
+			INSERT INTO product.products VALUES (1, product_name, brand_id, category_id, model_year, list_price);
+			--INSERT TO TABLE STOCK
+			INSERT INTO product.stocks VALUES (1, 0);
+		ELSE
+			INSERT INTO product.products VALUES (product_ids+1, product_name, brand_id, category_id, model_year, list_price);
+			INSERT INTO product.stocks VALUES (product_ids+1, 0);
+		END IF;
 END;
 $$;
 
