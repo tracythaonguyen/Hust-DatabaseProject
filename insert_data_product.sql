@@ -4,14 +4,14 @@ DROP PROCEDURE IF EXISTS product.new_brand;
 CREATE PROCEDURE product.new_brand(brand_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE brand_id BIGINT;
+DECLARE brand_ids BIGINT;
 BEGIN
 	IF NOT EXISTS(SELECT * FROM product.brands b WHERE b.brand_name = $1)
 	THEN
 		BEGIN
-      SELECT COUNT(*)+1 INTO brand_id FROM product.brands;
+			SELECT brand_id+1 INTO brand_ids FROM product.brands ORDER BY brand_id DESC LIMIT 1;
 			--INSERT
-			INSERT INTO product.brands VALUES (brand_id, brand_name);
+			INSERT INTO product.brands VALUES (brand_ids, brand_name);
 		END;
 	ELSE
 		RAISE NOTICE 'Already have: %', brand_name ;
@@ -25,14 +25,14 @@ DROP PROCEDURE IF EXISTS product.new_category;
 CREATE PROCEDURE product.new_category(category_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE category_id BIGINT;
+DECLARE category_ids BIGINT;
 BEGIN
 	IF NOT EXISTS(SELECT * FROM product.categories c WHERE c.category_name = $1)
 	THEN
 		BEGIN
-      SELECT COUNT(*)+1 INTO category_id FROM product.categories;
+      SELECT category_id+1 INTO category_ids FROM product.categories ORDER BY category_id DESC LIMIT 1;
 			--INSERT
-			INSERT INTO product.categories VALUES (category_id, category_name);
+			INSERT INTO product.categories VALUES (category_ids, category_name);
 		END;
 	ELSE
 		RAISE NOTICE 'Already have: %', category_name ;
@@ -46,11 +46,11 @@ DROP PROCEDURE IF EXISTS product.new_product;
 CREATE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
-DECLARE product_id BIGINT;
+DECLARE product_ids BIGINT;
 BEGIN
-  SELECT COUNT(*)+1 INTO product_id FROM product.products;
+  SELECT product_id+1 INTO product_ids FROM product.products ORDER BY product_id DESC LIMIT 1;
   --INSERT TO TABLE product
-  INSERT INTO product.products VALUES (product_id, product_name, brand_id, category_id, model_year, list_price);
+  INSERT INTO product.products VALUES (product_ids, product_name, brand_id, category_id, model_year, list_price);
   --INSERT TO TABLE STOCK
   INSERT INTO product.stocks VALUES (product_id, 0);
 END;
