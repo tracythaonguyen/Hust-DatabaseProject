@@ -65,4 +65,41 @@ select * from accounts
 delete from accounts
 
 --order
+CREATE TABLE cart(
+	customer_id BIGINT ; 
+	serial_code VARCHAR(255);
+)
+
+-- PROCEDURE add_to_cart
+CREATE OR REPLACE PROCEDURE add_to_cart(customer_id BIGINT,serial_code VARCHAR(255))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	--INSERT INTO TABLE cart
+	INSERT INTO cart VALUES (customer_id,serial_code);
+
+END;
+$$;
+
+
+-- PROCEDURE add_to_cart
+CREATE OR REPLACE PROCEDURE sales.make_order(customer_id_input BIGINT,staff_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+order_id BIGINT ; 
+serial_code BIGINT ; 
+BEGIN
+	--INSERT INTO TABLE orders
+	INSERT INTO sales.orders(customer_id,order_status,order_date,staff_id) VALUES (customer_id_input,0,NOW(),staff_id_input);
+	
+	SELECT order_id INTO order_id FROM sales.orders WHERE customer_id=customer_id_input ORDER BY order_id DESC LIMIT 1;
+	SELECT serial_code INTO serial_code FROM cart WHERE customer_id=customer_id_input;
+	--INSERT INTO TABLE order_details
+	INSERT INTO sales.order_details(order_id,serial_code,discount) VALUES ()
+
+END;
+$$;
+
+
 
