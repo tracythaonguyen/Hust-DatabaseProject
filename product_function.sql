@@ -23,7 +23,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product LIMIT lt; 
+	SELECT * FROM product.view_all_product ORDER BY avg_rating LIMIT lt; 
 END;
 $$;
 

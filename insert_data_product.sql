@@ -1,22 +1,15 @@
 -- PROCEDURE new_brand(brand_name)
 -- check brand_name, auto generate brand_id
 DROP PROCEDURE IF EXISTS product.new_brand;
-CREATE PROCEDURE product.new_brand(brand_name VARCHAR(255))
+CREATE OR REPLACE PROCEDURE product.new_brand(brand_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE brand_ids BIGINT;
 BEGIN
 	IF NOT EXISTS(SELECT * FROM product.brands b WHERE b.brand_name = $1)
 	THEN
 		BEGIN
-			SELECT brand_id INTO brand_ids FROM product.brands ORDER BY brand_id DESC LIMIT 1;
 			--INSERT
-			IF brand_ids IS NULL
-			THEN 
-				INSERT INTO product.brands VALUES (1, brand_name);
-			ELSE
-				INSERT INTO product.brands VALUES (brand_ids+1, brand_name);
-			END IF;
+			INSERT INTO product.brands(brand_name) VALUES (brand_name);
 		END;
 	ELSE
 		RAISE NOTICE 'Already have: %', brand_name ;
@@ -27,22 +20,15 @@ $$;
 -- PRECEDURE new_category(category_name)
 
 DROP PROCEDURE IF EXISTS product.new_category;
-CREATE PROCEDURE product.new_category(category_name VARCHAR(255))
+CREATE OR REPLACE PROCEDURE product.new_category(category_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE category_ids BIGINT;
 BEGIN
 	IF NOT EXISTS(SELECT * FROM product.categories c WHERE c.category_name = $1)
 	THEN
 		BEGIN
-      SELECT category_id INTO category_ids FROM product.categories ORDER BY category_id DESC LIMIT 1;
 			--INSERT
-			IF category_ids IS NULL
-			THEN 
-				INSERT INTO product.categories VALUES (1, category_name);
-			ELSE
-				INSERT INTO product.categories VALUES (category_ids+1, category_name);
-			END IF;
+			INSERT INTO product.categories(category_name) VALUES (category_name);
 		END;
 	ELSE
 		RAISE NOTICE 'Already have: %', category_name ;
@@ -53,25 +39,20 @@ $$;
 -- PROCEDURE new_product()
 
 DROP PROCEDURE IF EXISTS product.new_product;
-CREATE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
+CREATE OR REPLACE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
-DECLARE product_ids BIGINT;
+DECLARE product_id_var BIGINT;
 BEGIN
-	SELECT product_id INTO product_ids FROM product.products ORDER BY product_id DESC LIMIT 1;
-		IF product_ids IS NULL
-		THEN 
-			--INSERT TO TABLE product
-			INSERT INTO product.products VALUES (1, product_name, brand_id, category_id, model_year, list_price);
-			--INSERT TO TABLE STOCK
-			INSERT INTO product.stocks VALUES (1, 0);
-		ELSE
-			INSERT INTO product.products VALUES (product_ids+1, product_name, brand_id, category_id, model_year, list_price);
-			INSERT INTO product.stocks VALUES (product_ids+1, 0);
-		END IF;
+  --INSERT TO TABLE product
+  INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
+  --INSERT TO TABLE STOCK
+  SELECT p.product_id INTO product_id_var FROM product.products p 
+	WHERE p.product_name = $1 AND p.brand_id = $2 AND p.category_id = $3 
+				AND p.model_year = $4 AND p.list_price = $5;
+	INSERT INTO product.stocks VALUES (product_id_var, 0);
 END;
 $$;
-
 
 --
 -- INSERT DATA --
