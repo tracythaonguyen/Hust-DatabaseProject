@@ -196,10 +196,11 @@ BEGIN
 END;
 $$;
 
-BEGIN;
+--BEGIN;
+--TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
 CALL sales.generate_new_staff();
 SELECT * from sales.staffs;
-ROLLBACK ;
+--ROLLBACK ;
 
 -- Trung đang làm đoạn này chưa xong thì thấy thảo đần
 -- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)

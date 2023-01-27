@@ -205,10 +205,11 @@ CALL product.new_product('Q-Mobile Q EDGY', 19, 8, '2019', 181.45);
 CALL product.new_product('Verizon-47', 20, 7, '2019', 792.37);
 CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 
-select * from product.products;
-select * from product.brands;
-select * from product.categories;
-select * from product.stocks;
+--TRUNCATE TABLE product.categories RESTART IDENTITY CASCADE;
+--select * from product.products;
+--select * from product.brands;
+--select * from product.categories;
+--select * from product.stocks;
 
 -- item
 -- PROCEDURE new_item(serial_code,product_id,MFG,color,RAM,ROM)
@@ -309,9 +310,7 @@ BEGIN
 END;
 $$;
 
-
-BEGIN ;
 CALL product.generate_new_item();
-SELECT * FROM product.items;
-SELECT * FROM product.stocks;
-ROLLBACK;
+
+--SELECT * FROM product.items;
+--SELECT * FROM product.stocks;
