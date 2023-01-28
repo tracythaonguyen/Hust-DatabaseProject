@@ -1,4 +1,4 @@
-package hust.globalict.entity.sys;
+package hust.globalict.entity.products;
 
 import java.io.Serializable;
 
@@ -17,14 +17,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "sys.roles", catalog = "thegioididong")
-public class Role  implements Serializable{
-	@Column(name = "role_id")
+@Table(name = "product.categories", catalog = "thegioididong")
+public class Category implements Serializable{
+	@Column(name = "category_id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int role_id;
+	private long category_id;
 	
-	@Column(name = "role_name", length = 255, nullable = false)
-	private String role_name;
-	
+	@Column(name = "category_name", length = 255, nullable = false, unique = true)
+	private String category_name;
 }
