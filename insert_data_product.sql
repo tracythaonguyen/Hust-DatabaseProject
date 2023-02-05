@@ -200,7 +200,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 	--INSERT into table config
-	INSERT INTO product.config(color, RAM, ROM, extra_charge) VALUES (colour_input,RAM_input,ROM_input, extra_charge_input);
+	INSERT INTO product.config(color, RAM, ROM, extra_charge) VALUES (colour_input,RAM_input,ROM_input, extra_charge);
 END;
 $$;
 
@@ -228,7 +228,7 @@ $$ language plpgsql;
 --Function to random extra charge
 -- floor(random()* (high-low + 1) + low);
 DROP FUNCTION IF EXISTS random_extra;
-Create or replace function random_extra() returns varchar as
+Create or replace function random_extra() returns decimal(10,2) as
 $$
 begin
 	return random()* (50-1 + 1) + 1;
@@ -242,17 +242,17 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 	FOR cnt IN 1..50 LOOP
-		CALL product.new_item(random_colour(),POWER(2,trunc(random()*8))||' '||'GB',POWER(2,trunc(random()*8))||' '||'GB',random_extra());
+		CALL product.new_config(random_colour(),POWER(2,trunc(random()*8))||' '||'GB',POWER(2,trunc(random()*8))||' '||'GB',random_extra());
 	END LOOP;
 	FOR cnt IN 51..100 LOOP
-		CALL product.new_item(random_colour(),NULL,NULL);
+		CALL product.new_config(random_colour(),NULL,NULL, random_extra());
 	END LOOP;
 END;
 $$;
 
 CALL product.generate_new_config();
 
---SELECT * FROM product.config;
+SELECT * FROM product.config;
 
 -- item
 -- PROCEDURE new_item(serial_code,product_id,MFG,config_id)
@@ -319,13 +319,13 @@ BEGIN
 	FOR product_id_input IN 1..100 LOOP
 		IF (product_id_input IN (1,2,8))
 		THEN 
-			FOR config_id IN 1..50 LOOP
+			FOR config_id_input IN 1..50 LOOP
 			BEGIN 
 				CALL product.new_item(random_string(8),product_id_input,random_date(),config_id_input);
 			END;
 			END LOOP;
 		ELSE 
-			FOR config_id IN 51..100 LOOP
+			FOR config_id_input IN 51..100 LOOP
 				BEGIN
 					CALL product.new_item(random_string(8),product_id_input,random_date(),config_id_input);
 				END;
@@ -337,5 +337,5 @@ $$;
 
 CALL product.generate_new_item();
 
---SELECT * FROM product.items;
---SELECT * FROM product.stocks;
+SELECT * FROM product.items;
+SELECT * FROM product.stocks;
