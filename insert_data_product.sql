@@ -34,7 +34,6 @@ BEGIN
 END;
 $$;
 
-
 --
 -- INSERT DATA --
 --
@@ -292,8 +291,7 @@ BEGIN
 END;
 $$;
 
-BEGIN ;
 CALL product.generate_new_item();
-SELECT * FROM product.items;
-SELECT * FROM product.stocks;
-ROLLBACK;
+
+--SELECT * FROM product.items;
+--SELECT * FROM product.stocks;

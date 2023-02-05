@@ -4,11 +4,8 @@ DROP PROCEDURE IF EXISTS sales.new_staff;
 CREATE PROCEDURE sales.new_staff(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), active boolean,manager_id bigint)
 LANGUAGE plpgsql
 AS $$
-DECLARE staff_id BIGINT;
 BEGIN
-      SELECT COUNT(*)+1 INTO staff_id FROM sales.staffs;
-	  --INSERT
-	  INSERT INTO sales.staffs VALUES (staff_id,first_name,last_name,phone,email,street,city,active,manager_id);
+	  INSERT INTO sales.staffs(first_name,last_name,phone,email,street,city,active,manager_id) VALUES (first_name,last_name,phone,email,street,city,active,manager_id);
 END;
 $$;
 
@@ -132,7 +129,7 @@ begin
 end;
 $$ language plpgsql;
 
---Function to random city
+--Function to random street
 DROP FUNCTION IF EXISTS random_street;
 Create or replace function random_street() returns varchar as
 $$
@@ -153,7 +150,7 @@ begin
 end;
 $$ language plpgsql;
 
---Function to random city
+--Function to random active
 DROP FUNCTION IF EXISTS random_active;
 Create or replace function random_active() returns boolean as
 $$
@@ -170,7 +167,7 @@ begin
 end;
 $$ language plpgsql;
 
---Function to random city
+--Function to random manager
 DROP FUNCTION IF EXISTS random_manager;
 Create or replace function random_manager() returns bigint as
 $$
@@ -199,10 +196,11 @@ BEGIN
 END;
 $$;
 
-BEGIN;
+--BEGIN;
+--TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
 CALL sales.generate_new_staff();
 SELECT * from sales.staffs;
-ROLLBACK ;
+--ROLLBACK ;
 
 -- Trung đang làm đoạn này chưa xong thì thấy thảo đần
 -- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
