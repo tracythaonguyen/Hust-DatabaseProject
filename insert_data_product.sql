@@ -192,10 +192,72 @@ select * from product.brands;
 select * from product.categories;
 select * from product.stocks;
 
+-- config
+-- PROCEDURE new_config(color,RAM,ROM,extra_charge)
+DROP PROCEDURE IF EXISTS product.new_config;
+CREATE PROCEDURE product.new_config(colour_input VARCHAR(255), RAM_input VARCHAR(255), ROM_input VARCHAR(255), extra_charge decimal(10, 2))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	--INSERT into table config
+	INSERT INTO product.config(color, RAM, ROM, extra_charge) VALUES (colour_input,RAM_input,ROM_input, extra_charge_input);
+END;
+$$;
+
+--Function to random colour
+DROP FUNCTION IF EXISTS random_colour;
+Create or replace function random_colour() returns varchar as
+$$
+declare
+	white varchar := 'white';
+	black varchar:='black';
+	grey varchar:= 'grey';
+	rand int ;
+	 result varchar := '';
+begin
+	rand= trunc(random()*3+1);
+	CASE
+    	WHEN rand=1 THEN result= white ;        
+        WHEN rand=2 THEN result= black;   
+        WHEN rand=3 THEN result= grey;
+     END CASE;
+	 return result;
+end;
+$$ language plpgsql;
+
+--Function to random extra charge
+-- floor(random()* (high-low + 1) + low);
+DROP FUNCTION IF EXISTS random_extra;
+Create or replace function random_extra() returns varchar as
+$$
+begin
+	return random()* (50-1 + 1) + 1;
+end;
+$$ language plpgsql;
+
+
+DROP PROCEDURE IF EXISTS product.generate_new_config;
+CREATE PROCEDURE product.generate_new_config()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	FOR cnt IN 1..50 LOOP
+		CALL product.new_item(random_colour(),POWER(2,trunc(random()*8))||' '||'GB',POWER(2,trunc(random()*8))||' '||'GB',random_extra());
+	END LOOP;
+	FOR cnt IN 51..100 LOOP
+		CALL product.new_item(random_colour(),NULL,NULL);
+	END LOOP;
+END;
+$$;
+
+CALL product.generate_new_config();
+
+--SELECT * FROM product.config;
+
 -- item
--- PROCEDURE new_item(serial_code,product_id,MFG,color,RAM,ROM)
+-- PROCEDURE new_item(serial_code,product_id,MFG,config_id)
 DROP PROCEDURE IF EXISTS product.new_item;
-CREATE PROCEDURE product.new_item(serial_code_input VARCHAR(255),product_id_input bigint,MFG_input date, colour_input VARCHAR(255), RAM_input VARCHAR(255), ROM_input VARCHAR(255) )
+CREATE PROCEDURE product.new_item(serial_code_input VARCHAR(255),product_id_input bigint,MFG_input date, config_id bigint)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -204,7 +266,7 @@ BEGIN
 	THEN
 		BEGIN
 			--INSERT into table items
-			INSERT INTO product.items VALUES (serial_code_input, product_id_input,MFG_input,colour_input,RAM_input,ROM_input);
+			INSERT INTO product.items VALUES (serial_code_input, product_id_input,MFG_input,config_id);
 			--Update stock 
 			UPDATE product.stocks 
 			SET quantity= quantity+1 
@@ -235,26 +297,7 @@ begin
 end;
 $$ language plpgsql;
 
---Function to random colour
-DROP FUNCTION IF EXISTS random_colour;
-Create or replace function random_colour() returns varchar as
-$$
-declare
-	white varchar := 'white';
-	black varchar:='black';
-	grey varchar:= 'grey';
-	rand int ;
-	 result varchar := '';
-begin
-	rand= trunc(random()*3+1);
-	CASE
-    	WHEN rand=1 THEN result= white ;        
-        WHEN rand=2 THEN result= black;   
-        WHEN rand=3 THEN result= grey;
-     END CASE;
-	 return result;
-end;
-$$ language plpgsql;
+
 
 --function to random date
 DROP FUNCTION IF EXISTS random_date;
@@ -267,27 +310,28 @@ begin
 end;
 $$ language plpgsql;
 
-
 --function to random data
 DROP PROCEDURE IF EXISTS product.generate_new_item;
 CREATE PROCEDURE product.generate_new_item()
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	FOR product_id_input in 1..100 LOOP
-		FOR cnt IN 1..1000 LOOP
-    			IF (product_id_input IN (1,2,8))
-				THEN 
-					BEGIN 
-						CALL product.new_item(random_string(8),product_id_input,random_date(),random_colour(),POWER(2,trunc(random()*8))||' '||'GB',POWER(2,trunc(random()*8))||' '||'GB');
-					END;
-				ELSE 
-					BEGIN
-						CALL product.new_item(random_string(8),product_id_input,random_date(),random_colour(),NULL,NULL);
-					END;
-				END IF;
-   			END LOOP;
-    END LOOP;
+	FOR product_id_input IN 1..100 LOOP
+		IF (product_id_input IN (1,2,8))
+		THEN 
+			FOR config_id IN 1..50 LOOP
+			BEGIN 
+				CALL product.new_item(random_string(8),product_id_input,random_date(),config_id_input);
+			END;
+			END LOOP;
+		ELSE 
+			FOR config_id IN 51..100 LOOP
+				BEGIN
+					CALL product.new_item(random_string(8),product_id_input,random_date(),config_id_input);
+				END;
+			END LOOP;
+		END IF;
+	END LOOP;
 END;
 $$;
 
