@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS sys.roles;
 
 CREATE TABLE sys.roles (
     role_id INT,
-    role_name VARCHAR(255),
+    role_name VARCHAR(255) unique,
     PRIMARY KEY (role_id)
 );
 
@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS sales.orders;
 CREATE TABLE sales.orders (
   order_id BIGSERIAL,
 	customer_id BIGINT,
-	order_status INT,
+	order_status INT default 0,
 	order_date DATE,
 	staff_id BIGINT,
 	total_amount decimal(10,2),
@@ -104,7 +104,7 @@ DROP TABLE IF EXISTS product.brands;
 
 CREATE TABLE product.brands (
   brand_id BIGSERIAL,
-  brand_name VARCHAR(255),
+  brand_name VARCHAR(255) unique,
   PRIMARY KEY (brand_id)
 );
 
@@ -116,7 +116,7 @@ DROP TABLE IF EXISTS product.categories;
 
 CREATE TABLE product.categories (
   category_id BIGSERIAL,
-  category_name VARCHAR(255),
+  category_name VARCHAR(255) unique,
   PRIMARY KEY (category_id)
 );
 
@@ -127,14 +127,15 @@ CREATE TABLE product.categories (
 DROP TABLE IF EXISTS product.products;
 
 CREATE TABLE product.products (
-  product_id BIGSERIAL,
-	product_name VARCHAR(255),
+  	product_id BIGSERIAL,
+	product_name VARCHAR(255) unique,
 	brand_id BIGINT,
 	category_id BIGINT,
 	model_year CHAR(4),
 	list_price DECIMAL(10,2),
 	avg_rating decimal(1,1) default 0,
 	total_review bigint default 0,
+	discontinued boolean default FALSE,
   PRIMARY KEY (product_id),
   CONSTRAINT fk_brand
     FOREIGN KEY (brand_id)
@@ -160,6 +161,21 @@ CREATE TABLE product.stocks (
 );
 
 -- 
+-- Name: config; Type: TABLE
+-- 
+
+DROP TABLE IF EXISTS product.config;
+
+CREATE TABLE product.config (
+	config_id BIGSERIAL,
+	color VARCHAR(255),
+	RAM VARCHAR(255),
+	ROM VARCHAR(255),
+	extra_charge decimal(10, 2),
+  PRIMARY KEY (config_id)
+);
+
+-- 
 -- Name: items; Type: TABLE
 -- 
 
@@ -169,13 +185,15 @@ CREATE TABLE product.items (
 	serial_code VARCHAR(255),
 	product_id BIGINT,
 	MFG DATE,
-	color VARCHAR(255),
-	RAM VARCHAR(255),
-	ROM VARCHAR(255),
+	config_id bigint,
+	availability boolean default TRUE,
   PRIMARY KEY (serial_code),
   CONSTRAINT fk_product
     FOREIGN KEY (product_id)
-      REFERENCES product.products(product_id)
+      REFERENCES product.products(product_id),
+  CONSTRAINT fk_config
+    FOREIGN KEY (config_id)
+      REFERENCES product.config(config_id)
 );
 
 -- 
@@ -214,3 +232,20 @@ CREATE TABLE sales.coverages (
   REFERENCES sales.order_details(serial_code)
 );
 
+-- 
+-- Name: cart; Type: TABLE
+-- 
+
+DROP TABLE IF EXISTS sales.cart;
+
+CREATE TABLE sales.cart (
+    cart_id bigserial,
+	customer_id bigint,
+	serial_code varchar(255),
+
+	primary key(cart_id),
+	foreign key (customer_id)
+		references sales.customers(customer_id),
+	foreign key (serial_code)
+		references product.items(serial_code)
+);

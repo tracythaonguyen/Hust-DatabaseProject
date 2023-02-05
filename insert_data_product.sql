@@ -1,58 +1,36 @@
 -- PROCEDURE new_brand(brand_name)
 -- check brand_name, auto generate brand_id
-DROP PROCEDURE IF EXISTS product.new_brand;
-CREATE PROCEDURE product.new_brand(brand_name VARCHAR(255))
+CREATE OR REPLACE PROCEDURE product.new_brand(brand_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE brand_id BIGINT;
 BEGIN
-	IF NOT EXISTS(SELECT * FROM product.brands b WHERE b.brand_name = $1)
-	THEN
-		BEGIN
-      SELECT COUNT(*)+1 INTO brand_id FROM product.brands;
-			--INSERT
-			INSERT INTO product.brands VALUES (brand_id, brand_name);
-		END;
-	ELSE
-		RAISE NOTICE 'Already have: %', brand_name ;
-	END IF;
+	INSERT INTO product.brands(brand_name) VALUES (brand_name);
 END;
 $$;
 
 -- PRECEDURE new_category(category_name)
 
-DROP PROCEDURE IF EXISTS product.new_category;
-CREATE PROCEDURE product.new_category(category_name VARCHAR(255))
+CREATE OR REPLACE PROCEDURE product.new_category(category_name VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE category_id BIGINT;
 BEGIN
-	IF NOT EXISTS(SELECT * FROM product.categories c WHERE c.category_name = $1)
-	THEN
-		BEGIN
-      SELECT COUNT(*)+1 INTO category_id FROM product.categories;
-			--INSERT
-			INSERT INTO product.categories VALUES (category_id, category_name);
-		END;
-	ELSE
-		RAISE NOTICE 'Already have: %', category_name ;
-	END IF;
+	INSERT INTO product.categories(category_name) VALUES (category_name);
 END;
 $$;
 
 -- PROCEDURE new_product()
 
-DROP PROCEDURE IF EXISTS product.new_product;
-CREATE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
+CREATE OR REPLACE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
-DECLARE product_id BIGINT;
+DECLARE product_id_var BIGINT;
 BEGIN
-  SELECT COUNT(*)+1 INTO product_id FROM product.products;
   --INSERT TO TABLE product
-  INSERT INTO product.products VALUES (product_id, product_name, brand_id, category_id, model_year, list_price);
+  	INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
   --INSERT TO TABLE STOCK
-  INSERT INTO product.stocks VALUES (product_id, 0);
+  	SELECT p.product_id INTO product_id_var from product.products p 
+	where p.product_name = $1;
+ 	INSERT INTO product.stocks VALUES (product_id_var, 0);
 END;
 $$;
 
@@ -60,8 +38,6 @@ $$;
 --
 -- INSERT DATA --
 --
-
-select * from product.brands;
 
 -- brand (100)
 
@@ -179,8 +155,8 @@ CALL product.new_product('Realme 7i', 9, 8, '2020', 316.26);
 CALL product.new_product('Realme 7 Pro', 9, 8, '2020', 416.26);
 CALL product.new_product('Realme 8', 9, 8, '2021', 354.26);
 CALL product.new_product('Moto C.', 10, 8, '2017', 135.95);
-CALL product.new_product('Moto E.', 10, 8, '2018', 124.95);
-CALL product.new_product('Moto E.', 10, 8, '2019', 89.95);
+CALL product.new_product('Moto E. (2018)', 10, 8, '2018', 124.95);
+CALL product.new_product('Moto E. (2019)', 10, 8, '2019', 89.95);
 CALL product.new_product('Moto G.', 10, 8, '2020', 125.95);
 CALL product.new_product('Moto M.', 10, 8, '2017', 123.95);
 CALL product.new_product('Moto X.', 10, 8, '2019', 135.95);
@@ -207,6 +183,10 @@ CALL product.new_product('Q-Mobile GLAM', 19, 8, '2018', 281.45);
 CALL product.new_product('Q-Mobile Q EDGY', 19, 8, '2019', 181.45);
 CALL product.new_product('Verizon-47', 20, 7, '2019', 792.37);
 CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
+
+delete from product.stocks;
+delete from product.products;
+
 
 select * from product.products;
 select * from product.brands;
@@ -311,7 +291,6 @@ BEGIN
     END LOOP;
 END;
 $$;
-
 
 BEGIN ;
 CALL product.generate_new_item();
