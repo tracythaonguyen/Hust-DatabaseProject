@@ -196,24 +196,90 @@ BEGIN
 END;
 $$;
 
---BEGIN;
---TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
+BEGIN;
+TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
 CALL sales.generate_new_staff();
 SELECT * from sales.staffs;
---ROLLBACK ;
+ROLLBACK ;
 
--- Trung đang làm đoạn này chưa xong thì thấy thảo đần
 -- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
 -- -- Auto generate customer_id
--- DROP PROCEDURE IF EXISTS sales.new_customer;
--- CREATE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name varchar(255),pass_word varchar(255))
--- LANGUAGE plpgsql
--- AS $$
--- DECLARE customer_id BIGINT;
--- BEGIN
---       SELECT COUNT(*)+1 INTO staff_id FROM sales.staffs;
--- 	  --INSERT
--- 	  INSERT INTO sales.staffs VALUES (staff_id,first_name,last_name,phone,email,street,city,active,manager_id);
--- END;
--- $$;
+DROP PROCEDURE IF EXISTS sales.new_customer;
+CREATE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
+LANGUAGE plpgsql
+AS $$
+DECLARE account_id BIGINT;
+BEGIN
+	IF user_name_input NOT IN (SELECT user_name FROM accounts)
+	THEN 
+		BEGIN 
+			--INSERT into table accounts (Create an account for customer)
+			INSERT INTO sys.accounts(user_name,password,role_id) VALUES(user_name_input,pass_word,0);
+			SELECT account_id INTO account_id FROM sys.accounts WHERE user_name=user_name_input;
+			--INSERT into table customers
+			INSERT INTO sales.customers(first_name,last_name,phone,email,street,city,account_id) VALUES (first_name,last_name,phone,email,street,city,account_id);
+		END;
+	ELSE
+			RAISE NOTICE 'Username already been used';
+	END IF;
+END;
+$$;
+
+
+--Function to random customer firstname
+DROP FUNCTION IF EXISTS random_customer_firstname;
+Create or replace function random_customer_firstname() returns varchar as
+$$
+declare
+	firstname1 varchar := 'Linh';
+	firstname2 varchar:='Nhi';
+	firstname3 varchar:= 'Huyen';
+	firstname4 varchar:= 'Ky';
+	firstname5 varchar:= 'Hiep';
+	firstname6 varchar:= 'Loan';
+	firstname7 varchar:= 'Hieu';
+	firstname8 varchar:= 'Bach';
+	firstname9 varchar:= 'Tien';
+	firstname10 varchar:= 'Tam';
+	rand int ;
+	 result varchar := '';
+begin
+	rand= trunc(random()*10+1);
+	CASE
+    	WHEN rand=1 THEN result= firstname1 ;        
+        WHEN rand=2 THEN result= firstname2;   
+        WHEN rand=3 THEN result= firstname3;
+		WHEN rand=4 THEN result= firstname4;
+		WHEN rand=5 THEN result= firstname5;
+		WHEN rand=6 THEN result= firstname6;
+		WHEN rand=7 THEN result= firstname7;
+		WHEN rand=8 THEN result= firstname8;
+		WHEN rand=9 THEN result= firstname9;
+		WHEN rand=10 THEN result= firstname10;
+		
+     END CASE;
+	 return result;
+end;
+$$ language plpgsql;
+
+
+DROP PROCEDURE IF EXISTS sales.generate_new_customer;
+CREATE PROCEDURE sales.generate_new_customer()
+LANGUAGE plpgsql
+AS $$
+DECLARE num BIGINT ;
+BEGIN
+	num := 1000;
+	FOR cnt in 1..1000 LOOP
+    	CALL sales.new_staff(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar),random_string(10));
+		num=num-1;
+    END LOOP;
+END;
+$$;
+
+BEGIN;
+TRUNCATE TABLE sales.customers RESTART IDENTITY CASCADE;
+CALL sales.generate_new_customer();
+SELECT * from sales.customers;
+ROLLBACK ;
 

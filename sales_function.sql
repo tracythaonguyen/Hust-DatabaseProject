@@ -36,8 +36,52 @@ begin
 end
 $$;
 
+-- PROCEDURE make_order_online
+CREATE OR REPLACE PROCEDURE sales.make_order_offline(customer_id_input BIGINT,staff_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+order_id BIGINT ; 
+serial_code BIGINT ; 
+total_amount BIGINT ;
+price BIGINT;
+BEGIN
+	total_amount := 0 ;
+	--INSERT INTO TABLE orders
+	INSERT INTO sales.orders(customer_id,order_status,order_date,staff_id) VALUES (customer_id_input,0,CURRENT_DATE,staff_id_input);
+	
+	-- find the latest order
+	SELECT order_id INTO order_id 
+		FROM sales.orders WHERE customer_id=customer_id_input ORDER BY order_id DESC LIMIT 1;
+	
+	-- insert each item from cart into order_details and remove them from cart
+	-- find each item
+	SELECT c.serial_code INTO serial_code 
+		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
+	--Caculating money of the item
+	SELECT 
+	--INSERT INTO TABLE order_details
+    while serial_code is not null loop
+		INSERT INTO sales.order_details(order_id,serial_code,discount) 
+			VALUES (order_id, serial_code, 0);
+		delete from sales.cart c where c.serial_code = serial_code;
+	--insert purchased items to coverage
+		insert into sales.coverages(serial_code,coverages_expired_date ) 
+			values (serial_code, CURRENT_DATE + 365)
+	--update item to be not available
+		alter table product.items i set i.availability = false where i.serial_code = serial_code;
+	--increment next items
+	SELECT c.serial_code INTO serial_code 
+		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
+	end loop;
+	
+	-- Đoạn này thiếu phần:
+	-- tính lại tổng tiền đơn hàng và insert vào bảng order
+END;
+$$;
+
 -- PROCEDURE make_order
-CREATE OR REPLACE PROCEDURE sales.make_order(customer_id_input BIGINT,staff_id_input BIGINT)
+CREATE OR REPLACE PROCEDURE sales.make_order_online(customer_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -45,7 +89,7 @@ order_id BIGINT ;
 serial_code BIGINT ; 
 BEGIN
 	--INSERT INTO TABLE orders
-	INSERT INTO sales.orders(customer_id,order_date,staff_id) VALUES (customer_id_input,CURRENT_DATE,staff_id_input);
+	INSERT INTO sales.orders(customer_id,order_date,staff_id) VALUES (customer_id_input,CURRENT_DATE);
 	
 	-- find the latest order
 	SELECT order_id INTO order_id 
