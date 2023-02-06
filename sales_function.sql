@@ -36,85 +36,109 @@ begin
 end
 $$;
 
--- PROCEDURE make_order_online
+-- PROCEDURE make_order_offline
 CREATE OR REPLACE PROCEDURE sales.make_order_offline(customer_id_input BIGINT,staff_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
-order_id BIGINT ; 
-serial_code BIGINT ; 
-total_amount BIGINT ;
-price BIGINT;
+order_id_input BIGINT ; 
+serial_code_input BIGINT ; 
+total_amount_input BIGINT ;
+item_price BIGINT;
 BEGIN
-	total_amount := 0 ;
+	total_amount_input := 0 ;
 	--INSERT INTO TABLE orders
 	INSERT INTO sales.orders(customer_id,order_status,order_date,staff_id) VALUES (customer_id_input,0,CURRENT_DATE,staff_id_input);
 	
 	-- find the latest order
-	SELECT order_id INTO order_id 
+	SELECT order_id INTO order_id_input 
 		FROM sales.orders WHERE customer_id=customer_id_input ORDER BY order_id DESC LIMIT 1;
 	
 	-- insert each item from cart into order_details and remove them from cart
 	-- find each item
-	SELECT c.serial_code INTO serial_code 
+	SELECT c.serial_code INTO serial_code_input 
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
-	--Caculating money of the item
-	SELECT 
 	--INSERT INTO TABLE order_details
-    while serial_code is not null loop
+    while serial_code_input is not null loop
+		--Caculating money of the item
+		SELECT p.list_price +c.extra_charge INTO item_price 
+		FROM product.items i
+		JOIN product.products p on p.product_id=i.product_id 
+		JOIN product.config c on c.config_id=i.config_id 
+		WHERE i.serial_code=serial_code_input; 
+
+		total_amount_input=total_amount_input+item_price;
+		item_price=0;
 		INSERT INTO sales.order_details(order_id,serial_code,discount) 
-			VALUES (order_id, serial_code, 0);
-		delete from sales.cart c where c.serial_code = serial_code;
+			VALUES (order_id_input, serial_code_input, 0);
+		delete from sales.cart c where c.serial_code = serial_code_input;
 	--insert purchased items to coverage
 		insert into sales.coverages(serial_code,coverages_expired_date ) 
-			values (serial_code, CURRENT_DATE + 365)
+			values (serial_code_input, CURRENT_DATE + 365);
 	--update item to be not available
-		alter table product.items i set i.availability = false where i.serial_code = serial_code;
+		UPDATE product.items i set i.availability = false where i.serial_code = serial_code_input;
 	--increment next items
-	SELECT c.serial_code INTO serial_code 
+	SELECT c.serial_code INTO serial_code_input 
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	end loop;
 	
 	-- Đoạn này thiếu phần:
-	-- tính lại tổng tiền đơn hàng và insert vào bảng order
+	UPDATE sales.orders
+	SET total_amount=total_amount_input
+	WHERE order_id=order_id_input;
 END;
 $$;
 
--- PROCEDURE make_order
+-- PROCEDURE make_order_online
 CREATE OR REPLACE PROCEDURE sales.make_order_online(customer_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
-order_id BIGINT ; 
-serial_code BIGINT ; 
+DECLARE
+order_id_input BIGINT ; 
+serial_code_input BIGINT ; 
+total_amount_input BIGINT ;
+item_price BIGINT;
 BEGIN
+	total_amount_input := 0 ;
 	--INSERT INTO TABLE orders
-	INSERT INTO sales.orders(customer_id,order_date,staff_id) VALUES (customer_id_input,CURRENT_DATE);
+	INSERT INTO sales.orders(customer_id,order_status,order_date,staff_id) VALUES (customer_id_input,0,CURRENT_DATE,NULL);
 	
 	-- find the latest order
-	SELECT order_id INTO order_id 
+	SELECT order_id INTO order_id_input 
 		FROM sales.orders WHERE customer_id=customer_id_input ORDER BY order_id DESC LIMIT 1;
 	
 	-- insert each item from cart into order_details and remove them from cart
 	-- find each item
-	SELECT c.serial_code INTO serial_code 
+	SELECT c.serial_code INTO serial_code_input 
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	--INSERT INTO TABLE order_details
-    while serial_code is not null loop
+    while serial_code_input is not null loop
+		--Caculating money of the item
+		SELECT p.list_price +c.extra_charge INTO item_price 
+		FROM product.items i
+		JOIN product.products p on p.product_id=i.product_id 
+		JOIN product.config c on c.config_id=i.config_id 
+		WHERE i.serial_code=serial_code_input; 
+
+		total_amount_input=total_amount_input+item_price;
+		item_price=0;
 		INSERT INTO sales.order_details(order_id,serial_code,discount) 
-			VALUES (order_id, serial_code, 0);
-		delete from sales.cart c where c.serial_code = serial_code;
-	--insert purchased items to coverage
+			VALUES (order_id_input, serial_code_input, 0);
+		delete from sales.cart c where c.serial_code = serial_code_input;
+		--insert purchased items to coverage
 		insert into sales.coverages(serial_code,coverages_expired_date ) 
-			values (serial_code, CURRENT_DATE + 365)
-	--update item to be not available
-		alter table product.items i set i.availability = false where i.serial_code = serial_code;
-	--increment next items
-	SELECT c.serial_code INTO serial_code 
+			values (serial_code_input, CURRENT_DATE + 365);
+		--update item to be not available
+		UPDATE product.items i set i.availability = false where i.serial_code = serial_code_input;
+		--increment next items
+		SELECT c.serial_code INTO serial_code_input 
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	end loop;
 	
 	-- Đoạn này thiếu phần:
-	-- tính lại tổng tiền đơn hàng và insert vào bảng order
+	UPDATE sales.orders
+	SET total_amount=total_amount_input
+	WHERE order_id=order_id_input;
 END;
 $$;
