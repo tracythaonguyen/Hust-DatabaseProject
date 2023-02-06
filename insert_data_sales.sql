@@ -208,16 +208,16 @@ DROP PROCEDURE IF EXISTS sales.new_customer;
 CREATE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
 LANGUAGE plpgsql
 AS $$
-DECLARE account_id BIGINT;
+DECLARE account_id_input BIGINT;
 BEGIN
-	IF user_name_input NOT IN (SELECT user_name FROM accounts)
+	IF user_name_input NOT IN (SELECT user_name FROM sys.accounts)
 	THEN 
 		BEGIN 
 			--INSERT into table accounts (Create an account for customer)
 			INSERT INTO sys.accounts(user_name,password,role_id) VALUES(user_name_input,pass_word,0);
-			SELECT account_id INTO account_id FROM sys.accounts WHERE user_name=user_name_input;
+			SELECT account_id INTO account_id_input FROM sys.accounts WHERE user_name=user_name_input;
 			--INSERT into table customers
-			INSERT INTO sales.customers(first_name,last_name,phone,email,street,city,account_id) VALUES (first_name,last_name,phone,email,street,city,account_id);
+			INSERT INTO sales.customers(first_name,last_name,phone,email,street,city,account_id) VALUES (first_name,last_name,phone,email,street,city,account_id_input);
 		END;
 	ELSE
 			RAISE NOTICE 'Username already been used';
@@ -269,10 +269,10 @@ LANGUAGE plpgsql
 AS $$
 DECLARE num BIGINT ;
 BEGIN
-	num := 1000;
+	num := 1;
 	FOR cnt in 1..1000 LOOP
-    	CALL sales.new_staff(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar),random_string(10));
-		num=num-1;
+    	CALL sales.new_customer(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar),random_string(10));
+		num=num+1;
     END LOOP;
 END;
 $$;
@@ -281,5 +281,6 @@ BEGIN;
 TRUNCATE TABLE sales.customers RESTART IDENTITY CASCADE;
 CALL sales.generate_new_customer();
 SELECT * from sales.customers;
+SELECT * FROM sys.accounts;
 ROLLBACK ;
 
