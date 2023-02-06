@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -16,7 +17,6 @@ import hust.globalict.repository.BrandRepository;
 
 @SpringBootApplication
 @EnableJpaRepositories
-@ComponentScan("stackjava.com")
 public class ThegioididongApplication implements CommandLineRunner{
 	 @Autowired
 	 private BrandRepository brandRepository;
