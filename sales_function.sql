@@ -198,3 +198,32 @@ BEGIN
 	END IF;
 END;
 $$;
+
+--Procedure update info
+DROP PROCEDURE IF EXISTS sales.update_info; 
+CREATE OR REPLACE PROCEDURE sales.update_info(customer_id_input BIGINT,first_name_inp VARCHAR(255),last_name_inp VARCHAR(255), phone_inp VARCHAR(255), email_inp VARCHAR(255), street_inp VARCHAR(255), city_inp VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	UPDATE sales.customers
+	SET first_name = first_name_inp,
+		last_name = last_name_inp,
+		phone = phone_inp,
+		email = email_inp,
+		street = street_inp,
+		city = city_inp,
+		user_name = user_name_input,
+		password=pass_word
+	WHERE customer_id=customer_id_input;
+END;
+$$;
+
+--Procedure update info
+DROP PROCEDURE IF EXISTS sales.view_order_history; 
+CREATE OR REPLACE PROCEDURE sales.view_order_history(customer_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	SELECT * FROM order
+END;
+$$;
