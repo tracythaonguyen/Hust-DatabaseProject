@@ -1,4 +1,5 @@
 -- PROCEDURE add_to_cart
+DROP PROCEDURE IF EXISTS sales.add_to_cart;
 CREATE OR REPLACE PROCEDURE sales.add_to_cart(customer_id BIGINT,serial_code VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
@@ -10,7 +11,8 @@ END;
 $$;
 
 -- procedure view_cart
-create or replace procedure sales.view_cart(customer_id bigint)
+DROP PROCEDURE IF EXISTS sales.view_cart;
+create or replace procedure sales.view_cart(customer_id_input bigint)
 language plpgsql
 as $$
 begin
@@ -23,20 +25,22 @@ begin
 		on i.product_id = p.product_id
 	inner join product.config cf
 		on cf.config_id = i.config_id
-	where c.customer_id = customer_id;
+	where c.customer_id = customer_id_input;
 end
 $$;
 
 -- procedure remove_from_cart
+DROP PROCEDURE IF EXISTS sales.remove_from_cart;
 create or replace procedure sales.remove_from_cart(customer_id bigint, serial_code varchar(255))
 language plpgsql
 as $$
 begin
-	delete from sales.cart c where c.customer_id = customer_id and c.serial_code = serial_code
-end
+	delete from sales.cart c where c.customer_id = customer_id and c.serial_code = serial_code;
+end;
 $$;
 
 -- PROCEDURE make_order_offline
+DROP PROCEDURE IF EXISTS sales.make_order_offline;
 CREATE OR REPLACE PROCEDURE sales.make_order_offline(customer_id_input BIGINT,staff_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
@@ -82,7 +86,7 @@ BEGIN
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	end loop;
 	
-	-- Đoạn này thiếu phần:
+	-- Update orders
 	UPDATE sales.orders
 	SET total_amount=total_amount_input
 	WHERE order_id=order_id_input;
@@ -90,6 +94,7 @@ END;
 $$;
 
 -- PROCEDURE make_order_online
+DROP PROCEDURE IF EXISTS sales.make_order_online;
 CREATE OR REPLACE PROCEDURE sales.make_order_online(customer_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
@@ -136,9 +141,10 @@ BEGIN
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	end loop;
 	
-	-- Đoạn này thiếu phần:
+	-- Update orders
 	UPDATE sales.orders
 	SET total_amount=total_amount_input
 	WHERE order_id=order_id_input;
 END;
 $$;
+
