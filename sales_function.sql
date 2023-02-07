@@ -224,6 +224,39 @@ CREATE OR REPLACE PROCEDURE sales.view_order_history(customer_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	SELECT * FROM order
+	SELECT * FROM sales.orders WHERE customer_id =customer_id_input;
 END;
 $$;
+
+--Procedure view order
+DROP PROCEDURE IF EXISTS sales.view_detail_order_history; 
+CREATE OR REPLACE PROCEDURE sales.view_detail_order_history(order_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	SELECT * FROM sales.orders_details WHERE order_id =order_id_input;
+END;
+$$;
+
+--Procedure search order by id
+DROP PROCEDURE IF EXISTS sales.search_order_by_id; 
+CREATE OR REPLACE PROCEDURE sales.search_order_by_id(order_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	SELECT * FROM sales.orders o JOIN sales.order_details od ON o.order_id=od.order_id WHERE order_id =order_id_input;
+END;
+$$;
+
+--Procedure search order by date
+DROP PROCEDURE IF EXISTS sales.search_order_by_date; 
+CREATE OR REPLACE PROCEDURE sales.search_order_by_date(order_date_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	SELECT * FROM sales.orders o JOIN sales.order_details od ON o.order_id=od.order_id WHERE order_date =order_date_input;
+END;
+$$;
+
+
+
