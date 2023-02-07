@@ -81,6 +81,12 @@ BEGIN
 			values (serial_code_input, CURRENT_DATE + 365);
 	--update item to be not available
 		UPDATE product.items i set i.availability = false where i.serial_code = serial_code_input;
+	--UPDATE stock
+				UPDATE product.stocks 
+				SET stock= stock-1
+				WHERE product_id =(SELECT product_id 
+								  FROM product.items
+								  WHERE serial_code=serial_code_input);
 	--increment next items
 	SELECT c.serial_code INTO serial_code_input 
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
@@ -136,6 +142,12 @@ BEGIN
 			values (serial_code_input, CURRENT_DATE + 365);
 		--update item to be not available
 		UPDATE product.items i set i.availability = false where i.serial_code = serial_code_input;
+		--UPDATE stock
+				UPDATE product.stocks 
+				SET stock= stock-1
+				WHERE product_id =(SELECT product_id 
+								  FROM product.items
+								  WHERE serial_code=serial_code_input);
 		--increment next items
 		SELECT c.serial_code INTO serial_code_input 
 		FROM cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
@@ -148,3 +160,41 @@ BEGIN
 END;
 $$;
 
+--procedure cancel order
+DROP PROCEDURE IF EXISTS sales.cancel_order; 
+CREATE OR REPLACE PROCEDURE sales.cancel_order(order_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+DECLARE order_date_inp DATE;
+DEClARE serial_code_inp VARCHAR(255); 
+BEGIN
+	SELECT order_date INTO order_date_inp FROM sales.orders WHERE order_id=order_id_input;
+	IF(CURRENT_DATE- order_date_inp <=2)
+	THEN 
+		BEGIN
+			SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
+			while serial_code_inp is not null loop
+				-- UPDATE availability of the item
+				UPDATE product.items
+				SET availability= TRUE
+				WHERE serial_code=serial_code_inp;
+				--delete coverage 
+				DELETE FROM sales.coverages 
+				WHERE serial_code=serial_code_inp;
+				-- delete item from order_detail
+				DELETE FROM sales.order_details 
+				WHERE serial_code=serial_code_inp;
+				--UPDATE stock
+				UPDATE product.stocks 
+				SET stock= stock+1
+				WHERE product_id =(SELECT product_id 
+								  FROM product.items
+								  WHERE serial_code=serial_code_inp);
+				SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
+			end loop;
+		END;
+	ELSE
+		RAISE NOTICE 'Can not cancel orders after 2 days';
+	END IF;
+END;
+$$;
