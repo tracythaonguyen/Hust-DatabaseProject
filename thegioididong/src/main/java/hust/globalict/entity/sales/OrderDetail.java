@@ -14,13 +14,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import hust.globalict.entity.products.Item;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "sales.orders_details", catalog = "thegioididong")
 public class OrderDetail implements Serializable{
@@ -39,4 +43,7 @@ public class OrderDetail implements Serializable{
 	
 	@OneToOne(mappedBy = "item1")
     private Coverage coverage;
+	
+	@Column(name = "discount")
+	private int discount;
 }

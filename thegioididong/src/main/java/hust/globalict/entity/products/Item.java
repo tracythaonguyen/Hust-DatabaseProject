@@ -15,15 +15,19 @@ import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import hust.globalict.entity.sales.Coverage;
+import hust.globalict.entity.sales.Cart;
 import hust.globalict.entity.sales.OrderDetail;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "product.items", catalog = "thegioididong")
 public class Item implements Serializable{
@@ -42,14 +46,9 @@ public class Item implements Serializable{
 	@DateTimeFormat(pattern="yyyy-mm-dd")
     private Date MFG;
 	
-	@Column(name = "color", length = 255)
-	private String color;
-	
-	@Column(name = "RAM", length = 255)
-	private String RAM;
-	
-	@Column(name = "ROM", length = 255)
-	private String ROM;
+	@JoinColumn(name = "config_id")
+	@ManyToOne(cascade = CascadeType.ALL, optional = false)
+	private Config config;
 	
 	@OneToOne(mappedBy = "item")
     private OrderDetail orderdetail;

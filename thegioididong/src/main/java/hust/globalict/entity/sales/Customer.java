@@ -13,13 +13,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import hust.globalict.entity.sys.Account;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "sales.customers", catalog = "thegioididong")
 public class Customer implements Serializable{
@@ -49,5 +53,8 @@ public class Customer implements Serializable{
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "account_id", referencedColumnName = "account_id")
 	private Account account;
+	
+	@OneToOne(mappedBy = "customer")
+    private Cart cart;
 	
 }

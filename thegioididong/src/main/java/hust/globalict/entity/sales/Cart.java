@@ -1,19 +1,16 @@
 package hust.globalict.entity.sales;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import hust.globalict.entity.products.Item;
 import lombok.AllArgsConstructor;
@@ -28,19 +25,18 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "sales.coverages", catalog = "thegioididong")
-public class Coverage implements Serializable{
-	@Column(name = "coverage_id")
+@Table(name = "product.cart", catalog = "thegioididong")
+public class Cart implements Serializable{
+private static final long serialVersionUID = 1L;
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long coverage_id;
+	@Column(name = "cart_id")
+	private String cart_id;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "serial_code", referencedColumnName = "serial_code")
-	private Item item1;
+	@JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
+	private Customer customer;
 	
-	@Column(name = "coverages_expired_date")
-	@DateTimeFormat(pattern="yyyy-mm-dd")
-    private Date coverages_expired_date;
-	
+	@OneToMany(mappedBy="serial_code")
+    private Set<Item> items;
 }

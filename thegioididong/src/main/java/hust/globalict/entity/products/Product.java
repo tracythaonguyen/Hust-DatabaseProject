@@ -12,13 +12,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "product.products", catalog = "thegioididong")
 public class Product implements Serializable{
@@ -51,5 +55,8 @@ public class Product implements Serializable{
 	
 	@Column(name = "total_review")
 	private int total_review;
+	
+	@Column(name = "discontinued")
+	private boolean discontinued;
 	
 }
