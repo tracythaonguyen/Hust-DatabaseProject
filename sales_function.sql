@@ -5,7 +5,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 	--INSERT INTO TABLE cart
-	INSERT INTO cart(customer_id,serial_code) VALUES (customer_id,serial_code);
+	INSERT INTO sales.cart(customer_id,serial_code) VALUES (customer_id,serial_code);
 
 END;
 $$;
@@ -16,8 +16,8 @@ create or replace procedure sales.view_cart(customer_id_input bigint)
 language plpgsql
 as $$
 begin
-	select p.product_name, c.serial_code, 
-		cf.color, cf.ram, cf.rom, sum(p.list_price + cf.extra_charge) as total_price
+	select  p.product_name, c.serial_code, 
+		cf.color, cf.ram, cf.rom, p.list_price , cf.extra_charge
 	from sales.cart c
 	inner join product.items i
 		on c.serial_code = i.serial_code
@@ -31,13 +31,14 @@ $$;
 
 -- procedure remove_from_cart
 DROP PROCEDURE IF EXISTS sales.remove_from_cart;
-create or replace procedure sales.remove_from_cart(customer_id bigint, serial_code varchar(255))
+create or replace procedure sales.remove_from_cart(customer_id_input bigint, serial_code_input varchar(255))
 language plpgsql
 as $$
 begin
-	delete from sales.cart c where c.customer_id = customer_id and c.serial_code = serial_code;
+	delete from sales.cart c where c.customer_id = customer_id_input and c.serial_code = serial_code_input;
 end;
 $$;
+
 
 -- PROCEDURE make_order_offline
 DROP PROCEDURE IF EXISTS sales.make_order_offline;
