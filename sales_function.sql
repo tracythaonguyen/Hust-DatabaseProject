@@ -47,9 +47,9 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
 order_id_input BIGINT ; 
-serial_code_input BIGINT ; 
-total_amount_input BIGINT ;
-item_price BIGINT;
+serial_code_input VARCHAR(255) ; 
+total_amount_input DECIMAL(10,2);
+item_price DECIMAL(10,2);
 BEGIN
 	total_amount_input := 0 ;
 	--INSERT INTO TABLE orders
@@ -108,9 +108,9 @@ AS $$
 DECLARE
 DECLARE
 order_id_input BIGINT ; 
-serial_code_input BIGINT ; 
-total_amount_input BIGINT ;
-item_price BIGINT;
+serial_code_input VARCHAR(255) ; 
+total_amount_input DECIMAL(10,2);
+item_price DECIMAL(10,2);
 BEGIN
 	total_amount_input := 0 ;
 	--INSERT INTO TABLE orders
