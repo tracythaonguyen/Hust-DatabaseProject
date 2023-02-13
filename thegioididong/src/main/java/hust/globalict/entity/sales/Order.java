@@ -51,5 +51,5 @@ public class Order implements Serializable{
 	private Staff staff;
 	
 	@Column(name = "total_amount")
-	private int total_amount;
+	private float total_amount;
 }

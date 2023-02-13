@@ -45,5 +45,5 @@ public class OrderDetail implements Serializable{
     private Coverage coverage;
 	
 	@Column(name = "discount")
-	private int discount;
+	private float discount;
 }
