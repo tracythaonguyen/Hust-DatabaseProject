@@ -47,7 +47,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.product_name = name; 
+	SELECT * FROM product.view_all_product v WHERE v.product_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -60,7 +60,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.brand_name = name; 
+	SELECT * FROM product.view_all_product v WHERE v.brand_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -73,7 +73,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.category_name = name; 
+	SELECT * FROM product.view_all_product v WHERE v.category_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
