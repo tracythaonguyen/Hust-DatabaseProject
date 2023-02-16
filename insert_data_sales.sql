@@ -1,7 +1,6 @@
 -- PROCEDURE new_staff(first_name,last_name,phone,email,street,city,active,manager_id)
 -- Auto generate staff_id
-DROP PROCEDURE IF EXISTS sales.new_staff;
-CREATE PROCEDURE sales.new_staff(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), active boolean,manager_id bigint)
+CREATE OR REPLACE PROCEDURE sales.new_staff(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), active boolean,manager_id bigint)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -11,7 +10,6 @@ $$;
 
 
 --Function to random phonenumber
-DROP FUNCTION IF EXISTS random_phonenumber;
 Create or replace function random_phonenumber() returns varchar as
 $$
 declare
@@ -27,7 +25,6 @@ end;
 $$ language plpgsql;
 
 --Function to random serial code
-DROP FUNCTION IF EXISTS random_string;
 Create or replace function random_string(length integer) returns varchar as
 $$
 declare
@@ -46,7 +43,6 @@ end;
 $$ language plpgsql;
 
 --Function to random lastname
-DROP FUNCTION IF EXISTS random_lastname;
 Create or replace function random_lastname() returns varchar as
 $$
 declare
@@ -73,7 +69,6 @@ end;
 $$ language plpgsql;
 
 --Function to random firstname
-DROP FUNCTION IF EXISTS random_firstname;
 Create or replace function random_firstname() returns varchar as
 $$
 declare
@@ -109,7 +104,6 @@ end;
 $$ language plpgsql;
 
 --Function to random city
-DROP FUNCTION IF EXISTS random_city;
 Create or replace function random_city() returns varchar as
 $$
 declare
@@ -130,7 +124,6 @@ end;
 $$ language plpgsql;
 
 --Function to random street
-DROP FUNCTION IF EXISTS random_street;
 Create or replace function random_street() returns varchar as
 $$
 declare
@@ -151,7 +144,6 @@ end;
 $$ language plpgsql;
 
 --Function to random active
-DROP FUNCTION IF EXISTS random_active;
 Create or replace function random_active() returns boolean as
 $$
 declare
@@ -168,7 +160,6 @@ end;
 $$ language plpgsql;
 
 --Function to random manager
-DROP FUNCTION IF EXISTS random_manager;
 Create or replace function random_manager() returns bigint as
 $$
 declare
@@ -184,9 +175,7 @@ begin
 end;
 $$ language plpgsql;
 
-
-DROP PROCEDURE IF EXISTS sales.generate_new_staff;
-CREATE PROCEDURE sales.generate_new_staff()
+CREATE OR REPLACE PROCEDURE sales.generate_new_staff()
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -204,8 +193,8 @@ ROLLBACK ;
 
 -- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
 -- -- Auto generate customer_id
-DROP PROCEDURE IF EXISTS sales.new_customer;
-CREATE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
+drop procedure sales.new_customer
+CREATE OR REPLACE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
 LANGUAGE plpgsql
 AS $$
 DECLARE account_id_input BIGINT;
@@ -227,7 +216,6 @@ $$;
 
 
 --Function to random customer firstname
-DROP FUNCTION IF EXISTS random_customer_firstname;
 Create or replace function random_customer_firstname() returns varchar as
 $$
 declare
@@ -263,8 +251,7 @@ end;
 $$ language plpgsql;
 
 
-DROP PROCEDURE IF EXISTS sales.generate_new_customer;
-CREATE PROCEDURE sales.generate_new_customer()
+CREATE OR REPLACE PROCEDURE sales.generate_new_customer()
 LANGUAGE plpgsql
 AS $$
 DECLARE num BIGINT ;

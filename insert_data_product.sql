@@ -194,8 +194,7 @@ select * from product.stocks;
 
 -- config
 -- PROCEDURE new_config(color,RAM,ROM,extra_charge)
-DROP PROCEDURE IF EXISTS product.new_config;
-CREATE PROCEDURE product.new_config(colour_input VARCHAR(255), RAM_input VARCHAR(255), ROM_input VARCHAR(255), extra_charge decimal(10, 2))
+CREATE or replace PROCEDURE product.new_config(colour_input VARCHAR(255), RAM_input VARCHAR(255), ROM_input VARCHAR(255), extra_charge decimal(10, 2))
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -205,7 +204,6 @@ END;
 $$;
 
 --Function to random colour
-DROP FUNCTION IF EXISTS random_colour;
 Create or replace function random_colour() returns varchar as
 $$
 declare
@@ -227,7 +225,6 @@ $$ language plpgsql;
 
 --Function to random extra charge
 -- floor(random()* (high-low + 1) + low);
-DROP FUNCTION IF EXISTS random_extra;
 Create or replace function random_extra() returns decimal(10,2) as
 $$
 begin
@@ -235,9 +232,7 @@ begin
 end;
 $$ language plpgsql;
 
-
-DROP PROCEDURE IF EXISTS product.generate_new_config;
-CREATE PROCEDURE product.generate_new_config()
+CREATE OR REPLACE PROCEDURE product.generate_new_config()
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -256,8 +251,7 @@ SELECT * FROM product.config;
 
 -- item
 -- PROCEDURE new_item(serial_code,product_id,MFG,config_id)
-DROP PROCEDURE IF EXISTS product.new_item;
-CREATE PROCEDURE product.new_item(serial_code_input VARCHAR(255),product_id_input bigint,MFG_input date, config_id bigint)
+CREATE OR REPLACE PROCEDURE product.new_item(serial_code_input VARCHAR(255),product_id_input bigint,MFG_input date, config_id bigint)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -279,7 +273,6 @@ END;
 $$;
 
 --Function to random serial code
-DROP FUNCTION IF EXISTS random_string;
 Create or replace function random_string(length integer) returns varchar as
 $$
 declare
@@ -300,7 +293,6 @@ $$ language plpgsql;
 
 
 --function to random date
-DROP FUNCTION IF EXISTS random_date;
 Create or replace function random_date() returns date as
 $$
 begin
@@ -311,8 +303,7 @@ end;
 $$ language plpgsql;
 
 --function to random data
-DROP PROCEDURE IF EXISTS product.generate_new_item;
-CREATE PROCEDURE product.generate_new_item()
+CREATE OR REPLACE PROCEDURE product.generate_new_item()
 LANGUAGE plpgsql
 AS $$
 BEGIN

@@ -8,24 +8,21 @@ insert into sys.roles values (2, 'Sales Manager');
 select * from sys.roles;
 
 -- Account
-drop procedure IF EXISTS sys.new_account;
-
 create or replace procedure sys.new_account(user_name1 varchar(255), pass_word1 varchar (255), role_id1 bigint)
 language plpgsql
 as $$
 begin
 	execute 'create user ' || user_name1 || ' with PASSWORD ''' || pass_word1 || ''';';
 	insert into sys.accounts (user_name, password, role_id) values (user_name1, pass_word1, role_id1);
--- Đoạn này chưa viết xong procedure nên chưa phân quyền tạm để trống
-
---     if role_id1 = 1 THEN
---         execute 'GRANT SELECT, UPDATE, INSERT ON products TO '|| user_name1 ||';';
--- 		execute 'GRANT SELECT, UPDATE, INSERT ON items TO '|| user_name1 || ';';
+	execute 'grant usage on schema "sys" to '||user_name1 ||';';
+	execute 'grant usage on schema "public" to '||user_name1 ||';';
+	execute 'grant usage on schema "product" to '||user_name1 ||';';
+	execute 'grant usage on schema "sales" to '||user_name1 ||';';
+	if role_id1 = 0 then
+		execute 'grant execute on all procedures in schema "sales" to '||user_name1 ||';';
+--     elseif role_id1 = 1 THEN
 -- 	elseif role_id1 = 2 then
--- 		execute 'GRANT SELECT, UPDATE, INSERT ON orders TO '|| user_name1 || ';';
--- 		execute 'GRANT SELECT, UPDATE, INSERT ON order_details TO '|| user_name1 || ';';
--- 		execute 'GRANT SELECT ON ALL TABLES IN SCHEMA "public" TO '|| user_name1 || ';';
---     END if;
+    END if;
 end $$;
 
 -- PROCEDURE new_customer
@@ -49,7 +46,8 @@ BEGIN ;
 call sys.new_account('ktrung1709', '17092002', 2);
 call sys.new_account('thaobaymau', 'thao123', 1);
 call sys.new_account('dtm', 'minhdo123', 0);
-call sales.new_customer('Minh','Do','090323232','minhdotpc@gmail.com','HBT','HN','minhdo2207','218379273');
+call sales.new_customer('Minh','Do','090323232','minhdotpc@gmail.com','HBT','HN','dtm','dtm');
+call sales.new_customer('Minh','Do','0123456789','minhdotpc1@gmail.com','HBT','HN','dtm1','dtm1');
 select * FROM sales.customers;
 select * from sys.accounts;
 ROLLBACK;
@@ -65,6 +63,23 @@ select * from accounts
 delete from accounts
 
 
+GRANT SELECT, UPDATE, INSERT ON sys.accounts TO dtm;
+
+grant usage on schema "sys" to dtm;
+
+GRANT SELECT ON all tables IN SCHEMA "sys" TO dtm;
 
 
+grant select, insert, update, delete on table sales.cart to dtm1;
+grant select, insert, update on all tables in schema sales to dtm1;
+grant usage on sequence sales.orders_order_id_seq to dtm1;
+grant usage on sequence sales.order_details_order_detail_id_seq to dtm1;
+grant usage on sequence sales.coverages_coverage_id_seq to dtm1;
 
+grant select, update on all tables in schema product to dtm1;
+
+grant usage on sequence sales.cart_cart_id_seq to dtm1;
+grant execute on all functions in schema sales to dtm1;
+
+select sales.view_cart(3);
+select * from sales.cart;
