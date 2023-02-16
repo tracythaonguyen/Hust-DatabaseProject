@@ -2,7 +2,7 @@
 
 DROP VIEW IF EXISTS product.view_all_product;
 CREATE VIEW product.view_all_product AS
-	SELECT p.product_id id,
+	SELECT p.product_id product_id,
 		p.product_name product_name,
 		b.brand_name brand_name,
 		c.category_name category_name,
@@ -13,6 +13,17 @@ CREATE VIEW product.view_all_product AS
 	FROM product.products p
 		JOIN product.brands b USING (brand_id)
 		JOIN product.categories c USING (category_id);
+		
+DROP FUNCTION IF EXISTS product.view_all_product;
+CREATE OR REPLACE FUNCTION product.view_all_product()  
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+LANGUAGE plpgsql
+AS $$ 
+BEGIN 
+	RETURN QUERY  
+	SELECT * FROM product.view_all_product ; 
+END;
+$$;
 
 -- - View some products.
 
@@ -36,7 +47,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.product_name = name; 
+	SELECT * FROM product.view_all_product v WHERE v.product_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -49,7 +60,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.brand_name = name; 
+	SELECT * FROM product.view_all_product v WHERE v.brand_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -62,7 +73,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.category_name = name; 
+	SELECT * FROM product.view_all_product v WHERE v.category_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
