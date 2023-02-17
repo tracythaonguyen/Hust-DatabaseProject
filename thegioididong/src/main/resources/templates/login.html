@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Login Page</title>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+</head>
+<style type="text/css">
+    label {
+        display: inline-block;
+        width: 200px;
+        margin: 5px;
+        text-align: left;
+    }
+    input[type=text], input[type=password], select {
+        display: inline-block;
+        width: 200px;
+    }
+    input[type=radio] {
+        margin-left: 45px;
+    }
+    input[type=checkbox] {
+        margin-right: 190px;
+    }  
+    button {
+        padding: 5px;
+        margin: 10px;
+    }
+</style>
+<body>
+<div align="center">
+	<h1>Login</h1>
+    	<form th:action="@{/home}">
+    	<label>User name</label>
+    	<br>
+     <input type="text" name="user_name" id="user_name" size="50" th:value="${user_name}" required />
+    &nbsp;
+    <br>
+
+    <label>Password</label>
+    <br> 
+       <input type="text" name="password" id="password" size="50" th:value="${password}" required />
+    &nbsp;
+    <br>
+	<br>
+    <input type="submit" value="Login" />
+    &nbsp;
+    
+    
+	</form>
+	<br> 
+	 <a href="/account/register">Click here to register</a>
+	</div>
+</body>
+</html>
