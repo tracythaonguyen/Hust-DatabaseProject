@@ -15,28 +15,6 @@ public class AccountController {
 	@Autowired
     private AccountRepository accountRepo;
 	
-	@GetMapping("/home")
-	public String homeMenu(@ModelAttribute Account account, Model model){
-	   Account account1= accountRepo.findByUsername(account.getUser_name(),account.getPassword());
-	   model.addAttribute("account1",account1);
-	   return "homemenu";
-	}
-	
-	@GetMapping("/home/customer/menu")
-	public String customerMenu(Model model) {
-		return "customermenu";
-	}
-	
-	@GetMapping("/home/manager/menu")
-	public String managerMenu(Model model) {
-		return "managermenu";
-	}
-	
-	@GetMapping("/home/admin/menu")
-	public String mangagerMenu(Model model) {
-		return "adminmenu";
-	}
-	
 	@GetMapping("/account/login")
 	public String loginPage(@Param("name") String user_name,@Param("password") String password,Model model) {
 		if(user_name!= null) {
@@ -49,4 +27,21 @@ public class AccountController {
 		}
 		return "login";
 	}
+	
+	@GetMapping("/home")
+	public String homeMenu(@ModelAttribute Account account, Model model){
+	   Account account1= accountRepo.findByUsername(account.getUser_name(),account.getPassword());
+	   model.addAttribute("account1",account1);
+	   if(account1==null) {
+		   return "error_login";
+	   }else if(account1.getRole_id()==0) {
+		   return "customer_menu";
+	   }else if(account1.getRole_id()==1) {
+		   return "product_manager_menu";
+	   }else {
+		   return "sales_manager_menu";
+	   }
+	}
+	
+	
 }
