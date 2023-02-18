@@ -56,4 +56,7 @@ public class ProductDetail implements Serializable{
 	
 	@Column(name = "total_review")
 	private long total_review;
+	
+	@Column(name = "discontinued")
+	private boolean discontinued;
 }

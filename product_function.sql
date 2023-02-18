@@ -9,7 +9,8 @@ CREATE VIEW product.view_all_product AS
 		p.model_year,
 		p.list_price,
 		p.avg_rating,
-		p.total_review
+		p.total_review,
+		p.discontinued
 	FROM product.products p
 		JOIN product.brands b USING (brand_id)
 		JOIN product.categories c USING (category_id);
@@ -108,4 +109,30 @@ BEGIN
 END;
 $$;
 
+DROP PROCEDURE IF EXISTS product.discontinue_product;
+CREATE PROCEDURE product.discontinue_product(id BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	ALTER TABLE product.stocks
+		DROP CONSTRAINT fk_stock,
+		ADD CONSTRAINT fk_stock
+    FOREIGN KEY (product_id)
+      REFERENCES product.products(product_id) ON DELETE CASCADE;
+	UPDATE product.products
+	SET discontinued=TRUE
+	WHERE product_id = id;
+END;
+
+
+$$;
+
+DROP PROCEDURE IF EXISTS product.update_product;
+CREATE PROCEDURE product.update_product(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+--
+END;
+$$;
 -- còn nhiều, chưa viết hết

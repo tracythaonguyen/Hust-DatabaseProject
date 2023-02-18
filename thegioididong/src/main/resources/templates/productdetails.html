@@ -20,7 +20,8 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarResponsive">
 				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a class="nav-link" href="/product_manager_menu">Home</a></li>
+					<li class="nav-item"><a class="nav-link"
+						href="/product_manager_menu">Home</a></li>
 					<li class="nav-item"><a class="nav-link" href="/account/login">Logout</a></li>
 				</ul>
 			</div>
@@ -56,6 +57,7 @@
 					<th>Price</th>
 					<th>Average Rating</th>
 					<th>Total Review</th>
+					<th>Discontinued</th>
 
 				</tr>
 			</thead>
@@ -69,6 +71,7 @@
 					<td th:text="${productdetails.list_price}"></td>
 					<td th:text="${productdetails.avg_rating}"></td>
 					<td th:text="${productdetails.total_review}"></td>
+					<td th:text="${productdetails.discontinued}"></td>
 
 				</tr>
 			</tbody>

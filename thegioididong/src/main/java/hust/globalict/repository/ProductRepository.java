@@ -12,11 +12,11 @@ import hust.globalict.entity.products.ProductDetail;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>{
+		
+	@Query(value = "CALL product.delete_product(:product_id);",nativeQuery = true)
+	void deleteProductById(@Param("product_id") Long product_id);
 	
-	@Query(value="CALL product.update_list_price(:id, :price)",nativeQuery=true)
-	void updateListPrice(@Param("id") Integer id,@Param("price") Integer price);
-	
-	@Query(value = "CALL product.delete_product(:id);",nativeQuery = true)
-	void deleteProductById(@Param("id") Integer id);
+	@Query(value = "CALL product.discontinue_product(:product_id);",nativeQuery = true)
+	void discontinueProductById(@Param("product_id") Long product_id);
 	
 }
