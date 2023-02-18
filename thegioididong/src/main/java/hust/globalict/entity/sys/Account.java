@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 
 @Getter
 @Setter
@@ -39,10 +41,13 @@ public class Account implements Serializable{
 	@Column(name = "password", length = 255, nullable = false)
 	private String password;
 	
-	@JoinColumn(name = "role_id")
-	@ManyToOne(cascade = CascadeType.ALL, optional = false)
-	private Role role;
+//	@JoinColumn(name = "role_id")
+//	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch=FetchType.LAZY)
+//	private Role role;
 	
-	@OneToOne(mappedBy = "account")
+	@Column(name = "role_id")
+	private int role_id;
+	
+	@OneToOne(mappedBy = "account", fetch=FetchType.LAZY)
     private Customer customer;
 }
