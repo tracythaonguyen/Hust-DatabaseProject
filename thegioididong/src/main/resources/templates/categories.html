@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Brand</title>
+<title>Category</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -12,7 +12,7 @@
 	<!-- Navigation -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
 		<div class="container">
-			<a class="navbar-brand" href="/brands">Brands </a>
+			<a class="navbar-brand" href="/categories">Categories </a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarResponsive" aria-controls="navbarResponsive"
 				aria-expanded="false" aria-label="Toggle navigation">
@@ -31,28 +31,28 @@
 	<br>
 	<div class="container">
 		<div class="row">
-			<h1>List Brand</h1>
+			<h1>List Category</h1>
 
 		</div>
 		<br>
 		<div class=row>
 			<div class="col-lg-3">
-				<a th:href="@{/brands/new}" class="btn btn-primary btn-sm mb-3">Add
-					New Brand</a>
+				<a th:href="@{/categories/new}" class="btn btn-primary btn-sm mb-3">Add
+					New Category</a>
 			</div>
 		</div>
 
 		<table class="table table-striped table bordered">
 			<thead class="table-dark">
 				<tr>
-					<th>Brand ID</th>
-					<th>Brand Name</th>
+					<th>Category ID</th>
+					<th>CategoryName</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="brand: ${brands}">
-					<td th:text="${brand.brand_id}"></td>
-					<td th:text="${brand.brand_name}"></td>
+				<tr th:each="category: ${categories}">
+					<td th:text="${category.category_id}"></td>
+					<td th:text="${category.category_name}"></td>
 				</tr>
 			</tbody>
 		</table>
