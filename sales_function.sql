@@ -12,7 +12,7 @@ BEGIN
 END;
 $$;
 
-call sales.add_to_cart(3,'83S3H548');
+call sales.add_to_cart(1,'XK652W3M');
 
 --function view_cart
 CREATE OR REPLACE FUNCTION sales.view_cart(in customer_id_input bigint)  
@@ -55,7 +55,12 @@ serial_code_input varchar(255) ;
 total_amount_input decimal(10, 2) := 0;
 item_price decimal(10, 2);
 BEGIN
-	if (select cart_id from sales.cart c where c.customer_id = customer_id_input) is NULL
+	-- Check if staff active
+	if staff_id_input is not NULL 
+	and (select active from sales.staffs s where s.staff_id = staff_id_input) is FALSE
+		then RAISE NOTICE 'Staff no longer works';
+	-- Check for empty cart
+	elsif (select cart_id from sales.cart c where c.customer_id = customer_id_input) is NULL
 		then RAISE NOTICE 'Nothing in the cart, can not make order';	
 	else
 	begin
@@ -109,6 +114,12 @@ BEGIN
 END;
 $$;
 
+select * from sales.staffs;
+
+call sales.add_to_cart(3, '4HX6QQR4');
+call sales.add_to_cart(1, '4HX6QQR4');
+call sales.make_order_online(1);
+
 -- PROCEDURE make_order_online
 CREATE OR REPLACE PROCEDURE sales.make_order_online(customer_id_input BIGINT)
 LANGUAGE plpgsql
@@ -119,21 +130,28 @@ END;
 $$;
 
 select * from sales.orders;
-select * from sales.order_details;
+select * from sales.order_details where order_id = 16;
 select * from product.stocks;
-select * from sales.coverages;
+select * from sales.coverages where serial_code = '4HX6QQR4';
 select * from sales.cart;
-select * from product.items where serial_code = 'I59YFIT0';
+select * from product.items where serial_code = '4HX6QQR4';
 
---procedure cancel order
-CREATE OR REPLACE PROCEDURE sales.cancel_order(order_id_input BIGINT)
+select product_id from product.items i
+	inner join sales.order_details d on i.serial_code = d.serial_code;
+
+-- procedure cancel order
+CREATE OR REPLACE PROCEDURE sales.cancel_order(customer_id_input BIGINT, order_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
-DECLARE order_date_inp DATE;
+DECLARE order_status_inp INT;
 DEClARE serial_code_inp VARCHAR(255); 
 BEGIN
-	SELECT order_date INTO order_date_inp FROM sales.orders WHERE order_id=order_id_input;
-	IF(CURRENT_DATE- order_date_inp <=2)
+if (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
+	then RAISE NOTICE 'You did not order this order, can not cancel order';
+else
+	begin
+	SELECT order_status INTO order_status_inp FROM sales.orders WHERE order_id=order_id_input;
+	IF(order_status_inp = 0)
 	THEN 
 		BEGIN
 			SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
@@ -156,12 +174,20 @@ BEGIN
 								  WHERE serial_code=serial_code_inp);
 				SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
 			end loop;
+			UPDATE sales.orders
+			set order_status = 2 where order_id = order_id_input;		
 		END;
-	ELSE
-		RAISE NOTICE 'Can not cancel orders after 2 days';
+	ELSIF (order_status_inp = 1)
+		then RAISE NOTICE 'Order already processed, can not cancel';
+	else
+		RAISE NOTICE 'Order already canceled';
 	END IF;
+	end;
+end if;
 END;
 $$;
+
+call sales.cancel_order(1, 16);
 
 --Procedure update info 
 CREATE OR REPLACE PROCEDURE sales.update_info(customer_id_input BIGINT,first_name_inp VARCHAR(255),last_name_inp VARCHAR(255), phone_inp VARCHAR(255), email_inp VARCHAR(255), street_inp VARCHAR(255), city_inp VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
@@ -181,41 +207,76 @@ BEGIN
 END;
 $$;
 
---Procedure update info
-CREATE OR REPLACE PROCEDURE sales.view_order_history(customer_id_input BIGINT)
+--Function view_order_history
+CREATE OR REPLACE function sales.view_order_history(customer_id_input BIGINT)
+RETURNS TABLE(order_id bigint, order_status text, order_date date, 
+			  staff_id bigint,total_amount DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	SELECT * FROM sales.orders WHERE customer_id =customer_id_input;
+	return query 
+	SELECT o.order_id, 
+		case
+		when o.order_status = 0 then 'Pending'
+		when o.order_status = 1 then 'Processed'
+		when o.order_status = 2 then 'Canceled'
+		end order_status,
+		o.order_date, o.staff_id, o.total_amount
+	FROM sales.orders o WHERE o.customer_id = customer_id_input;
 END;
 $$;
 
---Procedure view order
-CREATE OR REPLACE PROCEDURE sales.view_detail_order_history(order_id_input BIGINT)
+select * from sales.view_order_history(3);
+select * from sales.orders;
+
+--function view order detail
+--Input phải có customer_id để lọc nếu ko 1 khách hàng có thể xem đơn hàng của khách hàng khác
+CREATE OR REPLACE function sales.view_detail_order_history(order_id_input BIGINT)
+RETURNS TABLE(product_name VARCHAR(255), serial_code VARCHAR(255), color VARCHAR(255), ram VARCHAR(255), rom VARCHAR(255),
+			  list_price DECIMAL(10,2), extra_charge DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	SELECT * FROM sales.orders_details WHERE order_id =order_id_input;
+	RETURN QUERY  
+	select  p.product_name, d.serial_code, 
+		cf.color, cf.ram, cf.rom, p.list_price , cf.extra_charge
+	from sales.order_details d
+	inner join product.items i
+		on d.serial_code = i.serial_code
+	inner join product.products p
+		on i.product_id = p.product_id
+	inner join product.config cf
+		on cf.config_id = i.config_id
+	where d.order_id = order_id_input; 
 END;
 $$;
 
---Procedure search order by id
-CREATE OR REPLACE PROCEDURE sales.search_order_by_id(order_id_input BIGINT)
+select * from sales.view_detail_order_history(15);
+
+-- Đang cân nhắc bỏ hàm này
+-- --Procedure search order by id
+-- CREATE OR REPLACE PROCEDURE sales.search_order_by_id(order_id_input BIGINT)
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+-- 	SELECT * FROM sales.orders o JOIN sales.order_details od ON o.order_id=od.order_id WHERE order_id =order_id_input;
+-- END;
+-- $$;
+
+--function search order by date
+CREATE OR REPLACE function sales.search_order_by_date(customer_id_input BIGINT, order_date_input date)
+RETURNS TABLE(order_id bigint, order_status text, staff_id bigint,total_amount DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	SELECT * FROM sales.orders o JOIN sales.order_details od ON o.order_id=od.order_id WHERE order_id =order_id_input;
+	return query 
+	select o.order_id, o.order_status, o.staff_id, o.total_amount
+	from sales.view_order_history(customer_id_input) o
+	WHERE o.order_date = order_date_input;
 END;
 $$;
 
---Procedure search order by date
-CREATE OR REPLACE PROCEDURE sales.search_order_by_date(order_date_input BIGINT) -- Thiếu customer id input
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	SELECT * FROM sales.orders o JOIN sales.order_details od ON o.order_id=od.order_id WHERE order_date =order_date_input;
-END;
-$$;
-
+select * from sales.search_order_by_date(3, '2023-02-16');
+select * from sales.orders;
 
 

@@ -80,6 +80,3 @@ grant select, update on all tables in schema product to dtm1;
 
 grant usage on sequence sales.cart_cart_id_seq to dtm1;
 grant execute on all functions in schema sales to dtm1;
-
-select sales.view_cart(3);
-select * from sales.cart;
