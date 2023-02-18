@@ -35,13 +35,22 @@ public class AccountController {
 	   if(account1==null) {
 		   return "error_login";
 	   }else if(account1.getRole_id()==0) {
-		   return "customer_menu";
+		   return "customer";
 	   }else if(account1.getRole_id()==1) {
-		   return "product_manager_menu";
+		   return "product_manager";
 	   }else {
-		   return "sales_manager_menu";
+		   return "sales_manager";
 	   }
 	}
+	@GetMapping("/product_manager_menu")
+	public String productManagerMenu(Model model){
+		
+		return "product_manager_menu";
+	}
 	
-	
+	@GetMapping("/customer_menu")
+	public String customerMenu(Model model){
+		
+		return "customer_menu";
+	}
 }

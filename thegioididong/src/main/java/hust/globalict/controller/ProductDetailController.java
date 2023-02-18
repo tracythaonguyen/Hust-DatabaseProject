@@ -23,12 +23,18 @@ public class ProductDetailController {
 	
 	@GetMapping("/productdetails")
 	public String listProductMenu(Model model){
+		model.addAttribute("productdetails",productDetailRepo.viewAllProduct());
 		return "productdetailsoptionmenu";
 	}
 	
-	@GetMapping("/productdetails/listall")
-	public String listProductDetail(Model model){
-		model.addAttribute("productdetails",productDetailRepo.viewAllProduct());
+	@GetMapping("/productdetails/view_top_products")
+	public String viewProduct(@Param("num") Integer num,Model model){
+		if(num!= null) {
+			model.addAttribute("num", num);
+			model.addAttribute("productdetails",productDetailRepo.viewProductsLimit(num));
+		}else {
+			model.addAttribute("productdetails",productDetailRepo.viewAllProduct());
+		}
 		return "productdetails";
 	}
 	
