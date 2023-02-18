@@ -85,7 +85,7 @@ BEGIN
 		WHERE i.serial_code=serial_code_input; 
 
 		total_amount_input=total_amount_input+item_price;
-		--item_price=0;
+		--discount=0;
 		INSERT INTO sales.order_details(order_id,serial_code,discount) 
 			VALUES (order_id_input, serial_code_input, 0);
 		delete from sales.cart c where c.serial_code = serial_code_input;
@@ -231,12 +231,15 @@ select * from sales.orders;
 
 --function view order detail
 --Input phải có customer_id để lọc nếu ko 1 khách hàng có thể xem đơn hàng của khách hàng khác
-CREATE OR REPLACE function sales.view_detail_order_history(order_id_input BIGINT)
+CREATE OR REPLACE function sales.view_detail_order_history(customer_id_input BIGINT,order_id_input BIGINT)
 RETURNS TABLE(product_name VARCHAR(255), serial_code VARCHAR(255), color VARCHAR(255), ram VARCHAR(255), rom VARCHAR(255),
 			  list_price DECIMAL(10,2), extra_charge DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
 BEGIN
+	if (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
+		then RAISE NOTICE 'You did not order this order, can not view order detail';
+	else
 	RETURN QUERY  
 	select  p.product_name, d.serial_code, 
 		cf.color, cf.ram, cf.rom, p.list_price , cf.extra_charge
@@ -247,21 +250,13 @@ BEGIN
 		on i.product_id = p.product_id
 	inner join product.config cf
 		on cf.config_id = i.config_id
-	where d.order_id = order_id_input; 
+	where d.order_id = order_id_input;
+	end if;
 END;
 $$;
 
-select * from sales.view_detail_order_history(15);
-
--- Đang cân nhắc bỏ hàm này
--- --Procedure search order by id
--- CREATE OR REPLACE PROCEDURE sales.search_order_by_id(order_id_input BIGINT)
--- LANGUAGE plpgsql
--- AS $$
--- BEGIN
--- 	SELECT * FROM sales.orders o JOIN sales.order_details od ON o.order_id=od.order_id WHERE order_id =order_id_input;
--- END;
--- $$;
+select * from sales.orders;
+select * from sales.view_detail_order_history(1,15);
 
 --function search order by date
 CREATE OR REPLACE function sales.search_order_by_date(customer_id_input BIGINT, order_date_input date)
@@ -279,4 +274,63 @@ $$;
 select * from sales.search_order_by_date(3, '2023-02-16');
 select * from sales.orders;
 
+CREATE OR REPLACE PROCEDURE sales.update_order_status(order_id_input BIGINT, order_status_input int)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	if order_id_input not in (select order_id from sales.orders)
+		then raise notice 'There is no such order with that id';
+	else
+	UPDATE sales.orders
+	SET order_status = order_status_input
+	WHERE order_id=order_id_input;
+	end if;
+END;
+$$;
 
+select * from sales.orders;
+call sales.update_order_status(9,1);
+call sales.update_order_status(10,1);
+
+-- lịch sử sản phẩm của từng khách hàng sẽ hay dùng nên t lập 1 view tổng hợp
+create view sales.product_bought_history as
+select o.customer_id, i.product_id, count(od.serial_code) total_bought
+from sales.orders o
+inner join sales.order_details od on o.order_id = od.order_id
+inner join product.items i on i.serial_code = od.serial_code 
+group by o.customer_id, i.product_id;
+
+select * from sales.order_details;
+
+CREATE OR REPLACE PROCEDURE sales.rate_product(customer_id_input BIGINT, product_id_input BIGINT, score decimal(2,1))
+LANGUAGE plpgsql
+AS $$
+declare 
+avg_rating_var decimal(2,1);
+total_review_var bigint;
+
+BEGIN
+	if (select customer_id from sales.product_bought_history 
+		where customer_id = customer_id_input and product_id = product_id_input) is null
+		then raise notice 'You have not order this product yet, can not rate';
+	else 
+		begin 
+			select avg_rating, total_review into avg_rating_var, total_review_var 
+				from product.products where product_id = product_id_input;
+			
+			UPDATE product.products
+			SET avg_rating = round(((avg_rating_var * total_review_var) + score)/(total_review_var+1),1)
+			where product_id = product_id_input;
+			
+			UPDATE product.products
+			set total_review = total_review_var + 1
+			where product_id = product_id_input;
+		end;
+	end if;
+END;
+$$;
+
+select * from sales.product_bought_history;
+call sales.rate_product(1, 1, 5.0);
+select * from product.products;
+call sales.rate_product(1, 1, 4.0);

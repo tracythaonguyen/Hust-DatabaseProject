@@ -133,7 +133,7 @@ CREATE TABLE product.products (
 	category_id BIGINT,
 	model_year CHAR(4),
 	list_price DECIMAL(10,2),
-	avg_rating decimal(1,1) default 0,
+	avg_rating decimal(2,1) default 0,
 	total_review bigint default 0,
 	discontinued boolean default FALSE,
   PRIMARY KEY (product_id),
@@ -145,6 +145,8 @@ CREATE TABLE product.products (
       REFERENCES product.categories(category_id)
 );
 
+ALTER TABLE product.products
+  ALTER COLUMN avg_rating TYPE decimal(2,1);
 -- 
 -- Name: stocks; Type: TABLE
 -- 
