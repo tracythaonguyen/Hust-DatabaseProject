@@ -23,10 +23,11 @@ public class ProductDetailController {
 	
 	@GetMapping("/productdetails")
 	public String listProductMenu(Model model){
+		model.addAttribute("productdetails",productDetailRepo.viewAllProduct());
 		return "productdetailsoptionmenu";
 	}
 	
-	@GetMapping("/productdetails/listall")
+	@GetMapping("/productdetails/view_top_products")
 	public String viewProduct(@Param("num") Integer num,Model model){
 		if(num!= null) {
 			model.addAttribute("num", num);

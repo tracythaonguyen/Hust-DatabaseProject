@@ -9,6 +9,25 @@
 	crossorigin="anonymous">
 </head>
 <body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+		<div class="container">
+			<a class="navbar-brand" href="/productdetails">Products Details </a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse"
+				data-target="#navbarResponsive" aria-controls="navbarResponsive"
+				aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link" href="/product_manager_menu">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="/account/login">Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<br>
+	<br>
 	<div class="container">
 		<div class="row">
 			<h1>Products Details</h1>
@@ -16,10 +35,10 @@
 		</div>
 		<script type="text/javascript">
 			function clearSearch() {
-				window.location = "[[@{/productdetails/listall}]]";
+				window.location = "[[@{/productdetails/view_top_products}]]";
 			}
 		</script>
-		<form th:action="@{/productdetails/listall/}">
+		<form th:action="@{/productdetails/view_top_products/}">
 			Top popular item: <input type="text" name="num" id="num" size="50"
 				th:value="${brand}" required /> &nbsp; <input type="submit"
 				value="Search" /> &nbsp; <input type="button" value="Clear"
@@ -54,12 +73,6 @@
 				</tr>
 			</tbody>
 		</table>
-	</div>
-	<div class="row">
-		<div class="col-lg-3">
-			<a th:href="@{/productdetails}" class="btn btn-primary btn-sm mb-3">
-				Back</a>
-		</div>
 	</div>
 </body>
 </html>
