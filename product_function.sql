@@ -135,4 +135,14 @@ BEGIN
 --
 END;
 $$;
+
+DROP PROCEDURE IF EXISTS product.add_product;
+CREATE PROCEDURE product.add_product(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+--
+END;
+$$;
+
 -- còn nhiều, chưa viết hết
