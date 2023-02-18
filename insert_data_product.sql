@@ -183,8 +183,8 @@ CALL product.new_product('Q-Mobile Q EDGY', 19, 8, '2019', 181.45);
 CALL product.new_product('Verizon-47', 20, 7, '2019', 792.37);
 CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 
-delete from product.stocks;
-delete from product.products;
+--delete from product.stocks;
+--delete from product.products;
 
 
 select * from product.products;

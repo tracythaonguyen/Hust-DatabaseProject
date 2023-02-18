@@ -30,7 +30,7 @@ $$;
 
 DROP FUNCTION IF EXISTS product.view_product_limit;
 CREATE OR REPLACE FUNCTION product.view_product_limit(IN lt BIGINT)  
-RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT,discontinued BOOLEAN)
 LANGUAGE plpgsql
 AS $$ 
 BEGIN 
@@ -43,7 +43,7 @@ $$;
 
 DROP FUNCTION IF EXISTS product.search_product_by_name;
 CREATE OR REPLACE FUNCTION product.search_product_by_name(IN name VARCHAR(255))  
-RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT,discontinued BOOLEAN)
 LANGUAGE plpgsql
 AS $$ 
 BEGIN 
@@ -56,7 +56,7 @@ $$;
 
 DROP FUNCTION IF EXISTS product.search_product_by_brand;
 CREATE OR REPLACE FUNCTION product.search_product_by_brand(IN name VARCHAR(255))  
-RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT,discontinued BOOLEAN)
 LANGUAGE plpgsql
 AS $$ 
 BEGIN 
@@ -69,7 +69,7 @@ $$;
 
 DROP FUNCTION IF EXISTS product.search_product_by_category;
 CREATE OR REPLACE FUNCTION product.search_product_by_category(IN name VARCHAR(255))  
-RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT,discontinued BOOLEAN)
 LANGUAGE plpgsql
 AS $$ 
 BEGIN 
