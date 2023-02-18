@@ -320,10 +320,7 @@ BEGIN
 			
 			UPDATE product.products
 			SET avg_rating = round(((avg_rating_var * total_review_var) + score)/(total_review_var+1),1)
-			where product_id = product_id_input;
-			
-			UPDATE product.products
-			set total_review = total_review_var + 1
+				,total_review = total_review_var + 1
 			where product_id = product_id_input;
 		end;
 	end if;
