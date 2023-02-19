@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
   <head>
     <meta charset="ISO-8859-1" />
-    <title>Customer Menu</title>
+    <title>Customer Cart</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
@@ -26,7 +26,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
       <div class="container">
-        <a class="navbar-brand" href="/customer_menu">THE GIOI DI DONG</a>
+        <a class="navbar-brand" href="cartdetails">Customer Cart</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -41,7 +41,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/cartdetails">Cart</a>
+              <a class="nav-link" href="/customer_menu">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/order_history">Order History</a>
@@ -59,7 +59,10 @@
     <br />
     <br />
     <div class="container">
-      <button
+      <div class="row">
+        <h1>Cart Details</h1>
+      </div>
+      <!-- <button
         class="btn btn-secondary dropdown-toggle"
         type="button"
         id="dropdownMenuButton"
@@ -68,8 +71,8 @@
         aria-expanded="false"
       >
         Search
-      </button>
-      <div class="dropdown-menu">
+      </button> -->
+      <!-- <div class="dropdown-menu">
         <a class="dropdown-item" href="/customer_menu/search_by_name">
           By Name
         </a>
@@ -82,36 +85,34 @@
         <a class="dropdown-item" href="/customer_menu/view_top_products">
           Top Popular Item
         </a>
-      </div>
+      </div> -->
       <br />
       <br />
       <table class="table table-striped table bordered">
         <thead class="table-dark">
           <tr>
-            <th>Product ID</th>
             <th>Product Name</th>
-            <th>Brand Name</th>
-            <th>Category Name</th>
-            <th>Model Year</th>
+            <th>Serial Code</th>
+            <th>Color</th>
+            <th>RAM</th>
+            <th>ROM</th>
             <th>Price</th>
-            <th>Average Rating</th>
-            <th>Total Review</th>
+            <th>Extra Charge</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr th:each="productdetails: ${productdetails}">
-            <td th:text="${productdetails.product_id}"></td>
-            <td th:text="${productdetails.product_name}"></td>
-            <td th:text="${productdetails.brand_name}"></td>
-            <td th:text="${productdetails.category_name}"></td>
-            <td th:text="${productdetails.model_year}"></td>
-            <td th:text="${productdetails.list_price}"></td>
-            <td th:text="${productdetails.avg_rating}"></td>
-            <td th:text="${productdetails.total_review}"></td>
+          <tr th:each="cartdetails: ${cartdetails}">
+            <td th:text="${cartdetails.product_name}"></td>
+            <td th:text="${cartdetails.serial_code"></td>
+            <td th:text="${cartdetails.color}"></td>
+            <td th:text="${cartdetails.RAM}"></td>
+            <td th:text="${cartdetails.ROM}"></td>
+            <td th:text="${cartdetails.list_price}"></td>
+            <td th:text="${cartdetails.extra_change}"></td>
             <td>
               <a href="/carts" class="btn btn-primary">
-                Add to Cart
+                Remove from Cart
               </a>
               <a href="/orders" class="btn btn-danger">
                 Buy
