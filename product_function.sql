@@ -235,3 +235,40 @@ BEGIN
 	INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
 END;
 $$;
+
+
+--Warehouse Management Functionalities
+-- Function view stock 
+DROP FUNCTION IF EXISTS product.view_stock;
+CREATE OR REPLACE FUNCTION product.view_stock()  
+RETURNS TABLE(product_id bigint,product_name VARCHAR(255), quantity bigint)
+LANGUAGE plpgsql
+AS $$ 
+BEGIN 
+	RETURN QUERY  
+	select  p.product_id ,p.product_name, s.quantity
+	from product.products p 
+	JOIN product.stocks s ON p.product_id = s.product_id;
+END;
+$$;
+
+--SELECT * FROM product.view_stock();
+
+
+--Function update stock
+DROP PROCEDURE IF EXISTS product.update_stock;
+CREATE PROCEDURE product.update_stock(id BIGINT, amount bigint)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	UPDATE product.stocks
+	SET quantity=amount
+	WHERE product_id = id;
+END;
+$$;
+
+
+
+
+
+
