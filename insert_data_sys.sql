@@ -14,14 +14,42 @@ as $$
 begin
 	execute 'create user ' || user_name1 || ' with PASSWORD ''' || pass_word1 || ''';';
 	insert into sys.accounts (user_name, password, role_id) values (user_name1, pass_word1, role_id1);
-	execute 'grant usage on schema "sys" to '||user_name1 ||';';
-	execute 'grant usage on schema "public" to '||user_name1 ||';';
+-- 	execute 'grant usage on schema "sys" to '||user_name1 ||';';
+-- 	execute 'grant usage on schema "public" to '||user_name1 ||';';
 	execute 'grant usage on schema "product" to '||user_name1 ||';';
 	execute 'grant usage on schema "sales" to '||user_name1 ||';';
+	execute 'grant usage on ALL SEQUENCES IN SCHEMA "product" to '||user_name1 ||';';
+	execute 'grant usage on ALL SEQUENCES IN SCHEMA "sales" to '||user_name1 ||';';
 	if role_id1 = 0 then
-		execute 'grant execute on all procedures in schema "sales" to '||user_name1 ||';';
---     elseif role_id1 = 1 THEN
--- 	elseif role_id1 = 2 then
+		begin
+			execute 'grant execute on all functions in schema "product" to '||user_name1 ||';';
+			execute 'grant execute on all procedures in schema "sales" to '||user_name1 ||';';
+		end;
+    elseif role_id1 = 1 THEN
+		begin
+			execute 'grant execute on all procedures in schema "product" to '||user_name1 ||';';
+			execute 'grant execute on all functions in schema "product" to '||user_name1 ||';';
+			execute 'grant select, insert, update on all tables in schema "product" to '||user_name1 ||';';
+		end;
+ 	elseif role_id1 = 2 then
+		begin
+			
+			-- function
+			execute 'GRANT EXECUTE ON FUNCTION sales.customer_revenue() TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON FUNCTION sales.product_revenue() TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON FUNCTION sales.product_total_sold() TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON FUNCTION sales.staff_revenue() TO '||user_name1 ||';';
+			
+			-- procedure
+			execute 'GRANT EXECUTE ON PROCEDURE sales.new_staff(IN first_name character varying, 
+			IN last_name character varying, IN phone character varying, IN email character varying, 
+			IN street character varying, IN city character varying, IN active boolean, IN manager_id bigint) TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON PROCEDURE sales.update_order_status(IN order_id_input bigint, 
+			IN order_status_input integer) TO '||user_name1 ||';';
+			
+			execute 'grant select, insert, update on all tables in schema "sales" to '||user_name1 ||';';
+			execute 'grant select on all tables in schema "product" to '||user_name1 ||';';
+		end;
     END if;
 end $$;
 
@@ -58,25 +86,3 @@ drop user  IF EXISTS ktrung1709;
 drop user IF EXISTS thaobaymau;
 DROP OWNED BY dtm; 
 drop user IF EXISTS dtm;
-
-select * from accounts
-delete from accounts
-
-
-GRANT SELECT, UPDATE, INSERT ON sys.accounts TO dtm;
-
-grant usage on schema "sys" to dtm;
-
-GRANT SELECT ON all tables IN SCHEMA "sys" TO dtm;
-
-
-grant select, insert, update, delete on table sales.cart to dtm1;
-grant select, insert, update on all tables in schema sales to dtm1;
-grant usage on sequence sales.orders_order_id_seq to dtm1;
-grant usage on sequence sales.order_details_order_detail_id_seq to dtm1;
-grant usage on sequence sales.coverages_coverage_id_seq to dtm1;
-
-grant select, update on all tables in schema product to dtm1;
-
-grant usage on sequence sales.cart_cart_id_seq to dtm1;
-grant execute on all functions in schema sales to dtm1;

@@ -1,7 +1,27 @@
 -- - View all products.
 
-DROP VIEW IF EXISTS product.view_all_product;
-CREATE VIEW product.view_all_product AS
+-- DROP VIEW IF EXISTS product.view_all_product;
+-- CREATE VIEW product.view_all_product AS
+-- 	SELECT p.product_id product_id,
+-- 		p.product_name product_name,
+-- 		b.brand_name brand_name,
+-- 		c.category_name category_name,
+-- 		p.model_year,
+-- 		p.list_price,
+-- 		p.avg_rating,
+-- 		p.total_review,
+-- 		p.discontinued
+-- 	FROM product.products p
+-- 		JOIN product.brands b USING (brand_id)
+-- 		JOIN product.categories c USING (category_id);
+		
+DROP FUNCTION IF EXISTS product.view_all_product;
+CREATE OR REPLACE FUNCTION product.view_all_product()  
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(2,1), total_review BIGINT, discontinued boolean)
+LANGUAGE plpgsql
+AS $$ 
+BEGIN 
+	RETURN QUERY  
 	SELECT p.product_id product_id,
 		p.product_name product_name,
 		b.brand_name brand_name,
@@ -13,18 +33,31 @@ CREATE VIEW product.view_all_product AS
 		p.discontinued
 	FROM product.products p
 		JOIN product.brands b USING (brand_id)
-		JOIN product.categories c USING (category_id);
-		
-DROP FUNCTION IF EXISTS product.view_all_product;
-CREATE OR REPLACE FUNCTION product.view_all_product()  
-RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT)
+		JOIN product.categories c USING (category_id); 
+END;
+$$;
+
+DROP FUNCTION IF EXISTS product.view_active_product;
+CREATE OR REPLACE FUNCTION product.view_active_product()  
+RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(2,1), total_review BIGINT)
 LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product ; 
+	SELECT v.product_id ,
+		v.product_name ,
+		v.brand_name ,
+		v.category_name ,
+		v.model_year,
+		v.list_price,
+		v.avg_rating,
+		v.total_review
+	FROM product.view_all_product() v
+	where v.discontinued = false; 
 END;
 $$;
+
+select * from product.view_active_product();
 
 -- - View some products.
 
@@ -35,7 +68,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product ORDER BY avg_rating LIMIT lt; 
+	SELECT * FROM product.view_all_product() ORDER BY avg_rating LIMIT lt; 
 END;
 $$;
 
@@ -48,7 +81,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.product_name ILIKE '%' || name || '%'; 
+	SELECT * FROM product.view_all_product() v WHERE v.product_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -61,7 +94,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.brand_name ILIKE '%' || name || '%'; 
+	SELECT * FROM product.view_all_product() v WHERE v.brand_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -74,7 +107,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product v WHERE v.category_name ILIKE '%' || name || '%'; 
+	SELECT * FROM product.view_all_product() v WHERE v.category_name ILIKE '%' || name || '%'; 
 END;
 $$;
 
@@ -114,11 +147,11 @@ CREATE PROCEDURE product.discontinue_product(id BIGINT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	ALTER TABLE product.stocks
-		DROP CONSTRAINT fk_stock,
-		ADD CONSTRAINT fk_stock
-    FOREIGN KEY (product_id)
-      REFERENCES product.products(product_id) ON DELETE CASCADE;
+-- 	ALTER TABLE product.stocks
+-- 		DROP CONSTRAINT fk_stock,
+-- 		ADD CONSTRAINT fk_stock
+--     FOREIGN KEY (product_id)
+--       REFERENCES product.products(product_id) ON DELETE CASCADE;
 	UPDATE product.products
 	SET discontinued=TRUE
 	WHERE product_id = id;
