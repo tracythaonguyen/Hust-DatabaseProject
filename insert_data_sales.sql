@@ -193,7 +193,7 @@ ROLLBACK ;
 
 -- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
 -- -- Auto generate customer_id
-drop procedure sales.new_customer
+drop procedure IF EXISTS sales.new_customer;
 CREATE OR REPLACE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
 LANGUAGE plpgsql
 AS $$
