@@ -32,9 +32,11 @@ public class BrandController {
 		return "create_brand";
 	}
 	
-	@PostMapping("/brands")
-	public String saveBrand(@ModelAttribute("brand") Brand brand) {
+	@GetMapping("/brands/save")
+	public String saveBrand(@ModelAttribute("brand") Brand brand,Model model) {
+		model.addAttribute("brand_name", brand.getBrand_name());
 		brandRepo.addNewBrand(brand.getBrand_name());
-		return "redirect :/brands";
+		model.addAttribute("brands", brandRepo.listAll());
+		return "brands";
 	}
 }
