@@ -11,12 +11,12 @@
 
 <body>
 	<div class="container">
-        <h1>Brand Management System</h1>
+        <h1>Category Management System</h1>
         <hr>
-        <h2>Add Brand</h2>
+        <h2>Add Category</h2>
  
-        <form action="#" th:action="@{/brands/save}" th:object="${brand}">
-            <input type="text" th:field="*{brand_name}" placeholder="Brand Name"
+        <form action="#" th:action="@{/categories/save}" th:object="${category}">
+            <input type="text" th:field="*{category_name}" placeholder="Category Name"
                 class="form-control mb-4 col-4"> 
  
             <button type="submit" class="btn btn-info col-2">Save
@@ -25,7 +25,7 @@
  
         <hr>
  
-        <a th:href="@{/brands}"> Back to Brand List</a>
+        <a th:href="@{/categories}"> Back to Category List</a>
     </div>
 
 </body>
