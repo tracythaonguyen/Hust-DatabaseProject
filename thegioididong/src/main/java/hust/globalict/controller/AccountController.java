@@ -53,4 +53,10 @@ public class AccountController {
 		
 		return "customer_menu";
 	}
+	
+	@GetMapping("/sales_manager_menu")
+	public String salesManagerMenu(Model model){
+		
+		return "sales_manager_menu";
+	}
 }
