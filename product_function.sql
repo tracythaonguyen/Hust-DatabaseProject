@@ -15,7 +15,7 @@
 -- 		JOIN product.brands b USING (brand_id)
 -- 		JOIN product.categories c USING (category_id);
 		
-DROP FUNCTION IF EXISTS product.view_all_product;
+DROP FUNCTION IF EXISTS product.view_all_product();
 CREATE OR REPLACE FUNCTION product.view_all_product()  
 RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(2,1), total_review BIGINT, discontinued boolean)
 LANGUAGE plpgsql
@@ -37,7 +37,7 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION IF EXISTS product.view_active_product;
+DROP FUNCTION IF EXISTS product.view_active_product();
 CREATE OR REPLACE FUNCTION product.view_active_product()  
 RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(2,1), total_review BIGINT)
 LANGUAGE plpgsql

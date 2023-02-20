@@ -41,7 +41,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/cartdetails">Cart</a>
+              <a class="nav-link" href="/cart">Cart</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/order_history">Order History</a>
@@ -59,31 +59,34 @@
     <br />
     <br />
     <div class="container">
-      <button
-        class="btn btn-secondary dropdown-toggle"
-        type="button"
-        id="dropdownMenuButton"
-        data-bs-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        Search
-      </button>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="/customer_menu/search_by_name">
-          By Name
-        </a>
-        <a class="dropdown-item" href="/customer_menu/search_by_brand">
-          By Brand
-        </a>
-        <a class="dropdown-item" href="/customer_menu/search_by_category">
-          By Category
-        </a>
-        <a class="dropdown-item" href="/customer_menu/view_top_products">
-          Top Popular Item
-        </a>
+      <div class="row">
+        <h1>Products Details</h1>
       </div>
-      <br />
+      <script type="text/javascript">
+        function clearSearch() {
+          window.location = '[[@{/customer_menu/search_by_name}]]'
+        }
+      </script>
+      <form th:action="@{/customer_menu/search_by_name/}">
+        Enter product name:
+        <input
+          type="text"
+          name="name"
+          id="name"
+          size="50"
+          th:value="${name}"
+          required
+        />
+        &nbsp;
+        <input type="submit" value="Search" />
+        &nbsp;
+        <input
+          type="button"
+          value="Clear"
+          id="btnClear"
+          onclick="clearSearch()"
+        />
+      </form>
       <br />
       <table class="table table-striped table bordered">
         <thead class="table-dark">
@@ -96,7 +99,6 @@
             <th>Price</th>
             <th>Average Rating</th>
             <th>Total Review</th>
-            <th>Discontinued</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -110,7 +112,6 @@
             <td th:text="${productdetails.list_price}"></td>
             <td th:text="${productdetails.avg_rating}"></td>
             <td th:text="${productdetails.total_review}"></td>
-            <td th:text="${productdetails.discontinued}"></td>
             <td>
               <a href="/carts" class="btn btn-primary">
                 Add to Cart
