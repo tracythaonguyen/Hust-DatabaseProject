@@ -54,7 +54,7 @@ begin
 end $$;
 
 -- PROCEDURE new_customer
-CREATE OR REPLACE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255),phone VARCHAR(255),email VARCHAR(255),street VARCHAR(255),city VARCHAR(255),username VARCHAR(255), password VARCHAR(255))
+CREATE OR REPLACE PROCEDURE sys.new_customer(first_name VARCHAR(255),last_name VARCHAR(255),phone VARCHAR(255),email VARCHAR(255),street VARCHAR(255),city VARCHAR(255),username VARCHAR(255), password VARCHAR(255))
 LANGUAGE plpgsql
 AS $$
 DECLARE account_id1 BIGINT ; 
@@ -74,8 +74,8 @@ BEGIN ;
 call sys.new_account('ktrung1709', '17092002', 2);
 call sys.new_account('thaobaymau', 'thao123', 1);
 call sys.new_account('dtm', 'minhdo123', 0);
-call sales.new_customer('Minh','Do','090323232','minhdotpc@gmail.com','HBT','HN','dtm','dtm');
-call sales.new_customer('Minh','Do','0123456789','minhdotpc1@gmail.com','HBT','HN','dtm1','dtm1');
+call sys.new_customer('Minh','Do','090323232','minhdotpc@gmail.com','HBT','HN','dtm','dtm');
+call sys.new_customer('Minh','Do','0123456789','minhdotpc1@gmail.com','HBT','HN','dtm1','dtm1');
 select * FROM sales.customers;
 select * from sys.accounts;
 ROLLBACK;

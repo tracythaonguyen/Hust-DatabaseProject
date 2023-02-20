@@ -61,8 +61,8 @@ select * from product.view_active_product();
 
 -- - View some products.
 
-DROP FUNCTION IF EXISTS product.view_product_limit;
-CREATE OR REPLACE FUNCTION product.view_product_limit(IN lt BIGINT)  
+DROP FUNCTION IF EXISTS product.view_top_product;
+CREATE OR REPLACE FUNCTION product.view_top_product(IN lt BIGINT)  
 RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(1,1), total_review BIGINT,discontinued BOOLEAN)
 LANGUAGE plpgsql
 AS $$ 
@@ -128,19 +128,19 @@ $$;
 
 -- Delete product
 
-DROP PROCEDURE IF EXISTS product.delete_product;
-CREATE PROCEDURE product.delete_product(id BIGINT)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	ALTER TABLE product.stocks
-		DROP CONSTRAINT fk_stock,
-		ADD CONSTRAINT fk_stock
-    FOREIGN KEY (product_id)
-      REFERENCES product.products(product_id) ON DELETE CASCADE;
-	DELETE FROM product.products p WHERE p.product_id = id;
-END;
-$$;
+-- DROP PROCEDURE IF EXISTS product.delete_product;
+-- CREATE PROCEDURE product.delete_product(id BIGINT)
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+-- 	ALTER TABLE product.stocks
+-- 		DROP CONSTRAINT fk_stock,
+-- 		ADD CONSTRAINT fk_stock
+--     FOREIGN KEY (product_id)
+--       REFERENCES product.products(product_id) ON DELETE CASCADE;
+-- 	DELETE FROM product.products p WHERE p.product_id = id;
+-- END;
+-- $$;
 
 DROP PROCEDURE IF EXISTS product.discontinue_product;
 CREATE PROCEDURE product.discontinue_product(id BIGINT)
