@@ -68,12 +68,12 @@ CREATE TABLE sales.staffs (
 	city VARCHAR(255),
 	active boolean,
   manager_id BIGINT,
-  PRIMARY KEY (staff_id)
+  PRIMARY KEY (staff_id),
+  CONSTRAINT fk_staff_id 
+    FOREIGN KEY (manager_id) 
+      REFERENCES sales.staffs(staff_id)
 );
 
-alter table sales.staffs 
-add constraint fk_staff_id 
-foreign key (manager_id) references sales.staffs(staff_id);
 -- 
 -- Name: orders; Type: TABLE
 -- 
@@ -145,8 +145,7 @@ CREATE TABLE product.products (
       REFERENCES product.categories(category_id)
 );
 
-ALTER TABLE product.products
-  ALTER COLUMN avg_rating TYPE decimal(2,1);
+
 -- 
 -- Name: stocks; Type: TABLE
 -- 
