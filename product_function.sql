@@ -268,7 +268,24 @@ END;
 $$;
 
 
+--Function view item
+DROP FUNCTION IF EXISTS product.view_available_item;
+CREATE OR REPLACE FUNCTION product.view_available_item(id bigint)  
+RETURNS TABLE(serial_code VARCHAR(255),mfg date,  color VARCHAR(255),RAM VARCHAR(255),ROM VARCHAR(255),total_price numeric(10,2))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT i.serial_code,i.mfg,c.color, c.RAM, c.ROM,(p.list_price+c.extra_charge) total_price
+	FROM product.items i 
+	JOIN product.products p ON p.product_id= i.product_id
+	JOIN product.config c ON c.config_id = i.config_id
+	WHERE i.product_id= id AND i.availability=TRUE;
+END;
+$$;
 
+
+SELECT * FROM product.view_available_item(1);
 
 
 
