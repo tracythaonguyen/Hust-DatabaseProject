@@ -15,7 +15,7 @@
 -- 		JOIN product.brands b USING (brand_id)
 -- 		JOIN product.categories c USING (category_id);
 		
-DROP FUNCTION IF EXISTS product.view_all_product;
+DROP FUNCTION IF EXISTS product.view_all_product();
 CREATE OR REPLACE FUNCTION product.view_all_product()  
 RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(2,1), total_review BIGINT, discontinued boolean)
 LANGUAGE plpgsql
@@ -37,7 +37,7 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION IF EXISTS product.view_active_product;
+DROP FUNCTION IF EXISTS product.view_active_product();
 CREATE OR REPLACE FUNCTION product.view_active_product()  
 RETURNS TABLE(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2), avg_rating DECIMAL(2,1), total_review BIGINT)
 LANGUAGE plpgsql
@@ -235,3 +235,57 @@ BEGIN
 	INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
 END;
 $$;
+
+
+--Warehouse Management Functionalities
+-- Function view stock 
+DROP FUNCTION IF EXISTS product.view_stock;
+CREATE OR REPLACE FUNCTION product.view_stock()  
+RETURNS TABLE(product_id bigint,product_name VARCHAR(255), quantity bigint)
+LANGUAGE plpgsql
+AS $$ 
+BEGIN 
+	RETURN QUERY  
+	select  p.product_id ,p.product_name, s.quantity
+	from product.products p 
+	JOIN product.stocks s ON p.product_id = s.product_id;
+END;
+$$;
+
+--SELECT * FROM product.view_stock();
+
+
+--Function update stock
+DROP PROCEDURE IF EXISTS product.update_stock;
+CREATE PROCEDURE product.update_stock(id BIGINT, amount bigint)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	UPDATE product.stocks
+	SET quantity=amount
+	WHERE product_id = id;
+END;
+$$;
+
+
+--Function view item
+DROP FUNCTION IF EXISTS product.view_available_item;
+CREATE OR REPLACE FUNCTION product.view_available_item(id bigint)  
+RETURNS TABLE(serial_code VARCHAR(255),mfg date,  color VARCHAR(255),RAM VARCHAR(255),ROM VARCHAR(255),total_price numeric(10,2))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT i.serial_code,i.mfg,c.color, c.RAM, c.ROM,(p.list_price+c.extra_charge) total_price
+	FROM product.items i 
+	JOIN product.products p ON p.product_id= i.product_id
+	JOIN product.config c ON c.config_id = i.config_id
+	WHERE i.product_id= id AND i.availability=TRUE;
+END;
+$$;
+
+
+SELECT * FROM product.view_available_item(1);
+
+
+
