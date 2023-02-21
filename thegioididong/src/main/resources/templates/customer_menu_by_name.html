@@ -103,22 +103,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr th:each="productdetails: ${productdetails}">
-            <td th:text="${productdetails.product_name}"></td>
-            <td th:text="${productdetails.brand_name}"></td>
-            <td th:text="${productdetails.category_name}"></td>
-            <td th:text="${productdetails.model_year}"></td>
-            <td th:text="${productdetails.list_price}"></td>
-            <td th:text="${productdetails.avg_rating}"></td>
-            <td th:text="${productdetails.total_review}"></td>
-            <td th:text="${productdetails.discontinued}"></td>
+          <tr th:each="productdetail: ${productdetails}">
+            <td th:text="${productdetail.product_name}"></td>
+            <td th:text="${productdetail.brand_name}"></td>
+            <td th:text="${productdetail.category_name}"></td>
+            <td th:text="${productdetail.model_year}"></td>
+            <td th:text="${productdetail.list_price}"></td>
+            <td th:text="${productdetail.avg_rating}"></td>
+            <td th:text="${productdetail.total_review}"></td>
+            <td th:text="${productdetail.discontinued}"></td>
             <td>
-              <a href="/carts" class="btn btn-primary">
-                Add to Cart
-              </a>
-              <a href="/orders" class="btn btn-danger">
-                Buy
-              </a>
+              <a
+						th:href="@{'/itemdetails/' + ${productdetail.product_id}}"
+						id="btnDelete" title="Detail" class="btn btn-primary">Detail</a>
             </td>
           </tr>
         </tbody>

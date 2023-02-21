@@ -5,12 +5,15 @@
 <title>Loaing...</title>
 </head>
 <body>
-		<div align="center">
+	<div align="center">
 		<h2>LOGIN Succeeded!</h2>
 		<span>Welcome back Customer :</span><span
-			th:text="${account1.user_name}"></span><br /> <a
-			class="btn btn-primary btn-lg" href="/customer_menu"
-			role="button">Go to customer menu</a>
+			th:text="${account1.user_name}"></span><br /> 
+		<form action="#" th:action="@{'/customer_menu/'+${account1.account_id}}"
+			th:object="${account}">
+			<button type="submit" class="btn btn-info col-2">Go
+			to customer menu</button>
+			</form>
 	</div>
 </body>
 </html>

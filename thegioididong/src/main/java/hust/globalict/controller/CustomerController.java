@@ -7,10 +7,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import hust.globalict.entity.products.ProductDetail;
+import hust.globalict.entity.sales.CustomerInfo;
+import hust.globalict.entity.sys.Account;
+import hust.globalict.repository.AccountRepository;
+import hust.globalict.repository.CustomerInfoRepository;
 import hust.globalict.repository.CustomerRepository;
 import hust.globalict.repository.CustomerRevenueRepository;
 import hust.globalict.repository.ItemDetailRepository;
@@ -29,7 +34,14 @@ public class CustomerController {
 
 	@Autowired
 	private ItemDetailRepository itemDetailRepo;
+	
+	@Autowired
+	private AccountRepository accountRepo;
+	
+	@Autowired
+	private CustomerInfoRepository customerInfoRepo;
 
+	
 	public CustomerController(CustomerRevenueRepository customerReveRepo) {
 		this.customerReveRepo = customerReveRepo;
 	}
@@ -40,9 +52,13 @@ public class CustomerController {
 		return "customer_revenue";
 	}
 
-	@GetMapping("/customer_menu")
-	public String customerMenu(Model model) {
+	@GetMapping("/customer_menu/{id:.+}")
+	public String customerMenu(@PathVariable Long id,Model model) {
 		model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
+		Account account = accountRepo.findAccountById(id);
+		model.addAttribute("account",account);
+		CustomerInfo customer= customerInfoRepo.findCustomerByAccountId(account.getAccount_id());
+		model.addAttribute("customer",customer);
 		return "customer_menu";
 	}
 
@@ -108,4 +124,42 @@ public class CustomerController {
 		}
 		return "customer_menu_by_category";
 	}
+	@GetMapping("/customer/update/{id:.+}")
+	public String updateCustomerInfo(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+		try {
+			if (id != null) {
+				CustomerInfo customer= customerInfoRepo.findCustomerByAccountId(id);
+				model.addAttribute("customer",customer);
+			} else {
+				redirectAttributes.addFlashAttribute("message", "The file does not exist!");
+			}
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("message",
+					"Could not delete product with id: " + id + ". Error: " + e.getMessage());
+		}	
+		return "update_customer_info";
+	}
+	
+	@GetMapping("/customer/updating/{id:.+}")
+	public String updateProductSub(@PathVariable Long id,@ModelAttribute("customer") CustomerInfo customer,Model model) {
+//		CustomerInfo customer= customerInfoRepo.findCustomerById(id);
+		model.addAttribute("customer",customer);
+		model.addAttribute("first_name", customer.getFirst_name());
+		model.addAttribute("last_name", customer.getLast_name());
+		model.addAttribute("phone", customer.getPhone());
+		model.addAttribute("email", customer.getEmail());
+		model.addAttribute("street 	", customer.getStreet());
+		model.addAttribute("city", customer.getCity());
+		model.addAttribute("use_name", customer.getUser_name());
+		model.addAttribute("pass_word", customer.getPass_word());
+		
+		
+		customerInfoRepo.updateCustomerInfo(id,customer.getFirst_name(),customer.getLast_name(),customer.getPhone(),customer.getEmail(),customer.getStreet(),customer.getCity(),customer.getUser_name(),customer.getPass_word());
+		
+		Account account = accountRepo.findAccountById(customer.getAccount_id());
+		model.addAttribute("account",account);
+		
+		return "redirect:/account/login";
+	}
+
 }
