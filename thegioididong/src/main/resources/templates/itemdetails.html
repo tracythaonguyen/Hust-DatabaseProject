@@ -36,7 +36,7 @@
 					<li class="nav-item"><a class="nav-link" href="/order_history">Order
 							History</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="/customer/infor">Infor</a></li>
+						href="/customer/infor">Info</a></li>
 					<li class="nav-item"><a class="nav-link" href="/account/login">Logout</a>
 					</li>
 				</ul>
@@ -68,8 +68,9 @@
 					<td th:text="${item.ram}"></td>
 					<td th:text="${item.rom}"></td>
 					<td th:text="${item.total_price}"></td>
-					<td><a href="/carts" class="btn btn-primary"> Add to Cart
-					</a> <a href="/orders" class="btn btn-danger"> Buy </a></td>
+					<td><a href="/carts" class="btn btn-info"> Add to Cart </a> 
+					<a href="/orders" class="btn btn-success"> Buy </a>
+					</td>
 				</tr>
 			</tbody>
 		</table>

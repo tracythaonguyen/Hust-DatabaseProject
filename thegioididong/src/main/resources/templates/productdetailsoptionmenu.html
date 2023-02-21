@@ -85,8 +85,8 @@
 					<td th:text="${productdetail.avg_rating}"></td>
 					<td th:text="${productdetail.total_review}"></td>
 					<td th:text="${productdetail.discontinued}"></td>
-					<td><a class="btn btn-primary"
-						href="@{/productdetails/update/{product_id}(product_id=${productdetail.product_id})}">Update</a>
+					<td><a th:href="@{'/productdetails/update/' + ${productdetail.product_id}}"
+						id="btnUpdate" title="" class="btn btn-primary">Update</a>
 						<a th:href="@{'/discontinueProduct/' + ${productdetail.product_id}}"
 						id="btnDelete" title="Delete" class="btn btn-danger">Discontinue</a>
 				</tr>
