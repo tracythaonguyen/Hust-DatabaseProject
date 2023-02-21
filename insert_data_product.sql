@@ -302,13 +302,29 @@ begin
 end;
 $$ language plpgsql;
 
+
+DROP FUNCTION return_id_category(bigint)
+CREATE OR REPLACE FUNCTION return_id_category(product_ids BIGINT) RETURNS BIGINT
+LANGUAGE plpgsql
+AS $$
+DECLARE category_ids BIGINT;
+BEGIN
+	SELECT p.category_id INTO category_ids
+	FROM product.products p
+	WHERE p.product_id = product_ids;
+	RETURN category_ids;
+END;
+$$;
+
 --function to random data
 CREATE OR REPLACE PROCEDURE product.generate_new_item()
 LANGUAGE plpgsql
 AS $$
+DECLARE category_ids BIGINT;
 BEGIN
 	FOR product_id_input IN 1..100 LOOP
-		IF (product_id_input IN (1,2,8))
+		SELECT * FROM return_id_category(product_id_input) INTO category_ids;
+		IF (category_ids IN (1,2,3,8))
 		THEN 
 			FOR config_id_input IN 1..50 LOOP
 			BEGIN 
