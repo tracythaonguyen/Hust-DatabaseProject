@@ -250,3 +250,6 @@ CREATE TABLE sales.cart (
 	foreign key (serial_code)
 		references product.items(serial_code)
 );
+
+ALTER TABLE sales.cart
+ADD CONSTRAINT cart_unique UNIQUE (customer_id, serial_code);

@@ -23,13 +23,27 @@ begin
 	if role_id1 = 0 then
 		begin
 			execute 'grant execute on all functions in schema "product" to '||user_name1 ||';';
-			execute 'grant execute on all procedures in schema "sales" to '||user_name1 ||';';
+			execute 'grant select, update on all tables in schema "product" to '||user_name1 ||';';
+			
+			execute 'GRANT EXECUTE ON PROCEDURE sales.add_to_cart(IN customer_id_input bigint, IN serial_code_input character varying) TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON PROCEDURE sales.cancel_order(IN customer_id_input bigint, IN order_id_input bigint) TO ' ||user_name1 ||';';
+			execute 'GRANT EXECUTE ON PROCEDURE sales.make_order_offline(IN customer_id_input bigint, IN staff_id_input bigint) TO ' ||user_name1 ||';';
+			execute 'GRANT EXECUTE ON PROCEDURE sales.make_order_online(IN customer_id_input bigint) TO ' ||user_name1 ||';';
+			execute 'GRANT EXECUTE ON PROCEDURE sales.rate_product(IN customer_id_input bigint, IN product_id_input bigint, IN score numeric) TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON PROCEDURE sales.remove_from_cart(IN customer_id_input bigint, IN serial_code_input character varying) TO ' ||user_name1 ||';';
+
+			execute 'GRANT EXECUTE ON FUNCTION sales.search_order_by_date(customer_id_input bigint, order_date_input date) TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON FUNCTION sales.view_cart(customer_id_input bigint) TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON FUNCTION sales.view_detail_order_history(customer_id_input bigint, order_id_input bigint) TO '||user_name1 ||';';
+			execute 'GRANT EXECUTE ON FUNCTION sales.view_order_history(customer_id_input bigint) TO '||user_name1 ||';';
+			
+			execute 'grant select, insert, update, delete on all tables in schema "sales" to '||user_name1 ||';';
 		end;
     elseif role_id1 = 1 THEN
 		begin
 			execute 'grant execute on all procedures in schema "product" to '||user_name1 ||';';
 			execute 'grant execute on all functions in schema "product" to '||user_name1 ||';';
-			execute 'grant select, insert, update on all tables in schema "product" to '||user_name1 ||';';
+			execute 'grant select, insert, update, delete on all tables in schema "product" to '||user_name1 ||';';
 		end;
  	elseif role_id1 = 2 then
 		begin
@@ -47,7 +61,7 @@ begin
 			execute 'GRANT EXECUTE ON PROCEDURE sales.update_order_status(IN order_id_input bigint, 
 			IN order_status_input integer) TO '||user_name1 ||';';
 			
-			execute 'grant select, insert, update on all tables in schema "sales" to '||user_name1 ||';';
+			execute 'grant select, insert, update, delete on all tables in schema "sales" to '||user_name1 ||';';
 			execute 'grant select on all tables in schema "product" to '||user_name1 ||';';
 		end;
     END if;
@@ -75,7 +89,7 @@ call sys.new_account('ktrung1709', '17092002', 2);
 call sys.new_account('thaobaymau', 'thao123', 1);
 call sys.new_account('dtm', 'minhdo123', 0);
 call sys.new_customer('Minh','Do','090323232','minhdotpc@gmail.com','HBT','HN','dtm','dtm');
-call sys.new_customer('Minh','Do','0123456789','minhdotpc1@gmail.com','HBT','HN','dtm1','dtm1');
+call sys.new_customer('Minh','Do','0123456787','minhdotpc12@gmail.com','HBT','HN','dtm2','dtm2');
 select * FROM sales.customers;
 select * from sys.accounts;
 ROLLBACK;
