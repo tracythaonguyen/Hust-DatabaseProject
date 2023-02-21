@@ -182,7 +182,7 @@ $$;
 
 -- update product
 DROP PROCEDURE IF EXISTS product.update_product;
-CREATE PROCEDURE product.update_product(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2))
+CREATE PROCEDURE product.update_product(product_id BIGINT, product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price NUMERIC(10,2))
 LANGUAGE plpgsql
 AS $$
 DECLARE brand_ids BIGINT;
@@ -211,7 +211,7 @@ $$;
 
 -- add product
 DROP PROCEDURE IF EXISTS product.add_product;
-CREATE PROCEDURE product.add_product(product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price DECIMAL(10,2))
+CREATE PROCEDURE product.add_product(product_name VARCHAR(255), brand_name VARCHAR(255), category_name VARCHAR(255), model_year CHAR(4), list_price NUMERIC(10,2))
 LANGUAGE plpgsql
 AS $$
 DECLARE brand_id BIGINT;
@@ -285,7 +285,7 @@ END;
 $$;
 
 
-SELECT * FROM product.view_available_item(1);
+--SELECT * FROM product.view_available_item(1);
 
 
 

@@ -1,19 +1,22 @@
 package hust.globalict.entity.products;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Type;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Immutable;
 
 @Getter
 @Setter
@@ -43,14 +46,14 @@ public class ProductDetail implements Serializable {
   @Column(name = "model_year", length = 4)
   private String model_year;
 
-  @Column(name = "list_price")
-  private double list_price;
+  @Column(name = "list_price",precision = 10, scale = 2)
+  private java.math.BigDecimal list_price;
 
   @Column(name = "avg_rating")
-  private double avg_rating;
+  private Double avg_rating;
 
   @Column(name = "total_review")
-  private long total_review;
+  private Long total_review;
 
   @Column(name = "discontinued")
   private boolean discontinued;

@@ -247,7 +247,9 @@ $$;
 
 CALL product.generate_new_config();
 
-SELECT * FROM product.config;
+SELECT * FROM product.items i
+JOIN product.config c on i.config_id=c.config_id
+WHERE i.product_id =4;
 
 -- item
 -- PROCEDURE new_item(serial_code,product_id,MFG,config_id)

@@ -99,73 +99,53 @@ public class ProductDetailController {
 		}
 		return "redirect:/productdetails";
 	}
-
-	@GetMapping("/customer_menu")
-	public String customerMenu(Model model) {
-		model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
-		return "customer_menu";
+	@GetMapping("/productdetails/new")
+	public String createProductForm(Model model) {
+		ProductDetail product= new ProductDetail();
+		model.addAttribute("product", product);
+		return "create_product";
 	}
-
-	@GetMapping("/itemdetails/{id:.+}")
-	public String viewAvailableItem(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+	
+	@GetMapping("/productdetails/save")
+	public String saveProduct(@ModelAttribute("product") ProductDetail product,Model model) {
+		model.addAttribute("product_name", product.getProduct_name());
+		model.addAttribute("brand_name", product.getBrand_name());
+		model.addAttribute("category_name", product.getCategory_name());
+		model.addAttribute("model_year", product.getModel_year());
+		model.addAttribute("list_price", product.getList_price());
+		
+		productDetailRepo.addProduct(product.getProduct_name(),product.getBrand_name(),product.getCategory_name(),product.getModel_year(),product.getList_price());
+		model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
+		return "productdetailsoptionmenu";
+	}
+	@GetMapping("/productdetails/update/{id:.+}")
+	public String updateProduct(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			if (id != null) {
-				model.addAttribute("items", itemDetailRepo.viewAllItem(id));
-				redirectAttributes.addFlashAttribute("message", "Delete successfully: " + id);
+				ProductDetail product= productDetailRepo.searchProductById(id);
+				model.addAttribute("product", product);
 			} else {
 				redirectAttributes.addFlashAttribute("message", "The file does not exist!");
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message",
 					"Could not delete product with id: " + id + ". Error: " + e.getMessage());
-		}
-		return "itemdetails";
+		}	
+		return "update_product";
 	}
+	@GetMapping("/productdetails/updating/{id:.+}")
+	public String updateProductSub(@PathVariable Long id,@ModelAttribute("product") ProductDetail product,Model model) {
+		model.addAttribute("product_name", product.getProduct_name());
+		model.addAttribute("brand_name", product.getBrand_name());
+		model.addAttribute("category_name", product.getCategory_name());
+		model.addAttribute("model_year", product.getModel_year());
+		model.addAttribute("list_price", product.getList_price());
+		productDetailRepo.updateProduct(id,product.getProduct_name(),product.getBrand_name(),product.getCategory_name(),product.getModel_year(),product.getList_price());
 
-	@GetMapping("/customer_menu/view_top_products")
-	public String viewProductCustomer(@Param("num") Integer num, Model model) {
-		if (num != null) {
-			model.addAttribute("num", num);
-			model.addAttribute("productdetails", productDetailRepo.viewProductsLimit(num));
-		} else {
-			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
-		}
-		return "customer_menu_top";
-	}
+		model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
+		productDetailRepo.updateProduct(product.getProduct_id(),product.getProduct_name(),product.getBrand_name(),product.getCategory_name(),product.getModel_year(),product.getList_price());
 
-	@GetMapping("/customer_menu/search_by_name")
-	public String searchProductByNameCustomer(@Param("name") String name, Model model) {
-		if (name != null) {
-			model.addAttribute("name", name);
-			List<ProductDetail> productdetails = productDetailRepo.searchProductByName(name);
-			model.addAttribute("productdetails", productdetails);
-		} else {
-			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
-		}
-		return "customer_menu_by_name";
+		return "productdetailsoptionmenu";
 	}
-
-	@GetMapping("/customer_menu/search_by_brand")
-	public String searchProductByBrandCustomer(@Param("brand") String brand, Model model) {
-		if (brand != null) {
-			model.addAttribute("brand", brand);
-			List<ProductDetail> productdetails = productDetailRepo.searchProductByBrand(brand);
-			model.addAttribute("productdetails", productdetails);
-		} else {
-			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
-		}
-		return "customer_menu_by_brand";
-	}
-
-	@GetMapping("/customer_menu/search_by_category")
-	public String searchProductByCategoryCustomer(@Param("category") String category, Model model) {
-		if (category != null) {
-			model.addAttribute("category", category);
-			List<ProductDetail> productdetails = productDetailRepo.searchProductByCategory(category);
-			model.addAttribute("productdetails", productdetails);
-		} else {
-			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
-		}
-		return "customer_menu_by_category";
-	}
+	
 }
