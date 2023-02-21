@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+  <head>
+    <meta charset="ISO-8859-1" />
+    <title>Customer Revenue</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+      <div class="container">
+        <a class="navbar-brand" href="/customer_revenue">Customer Revenue</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarResponsive"
+          aria-controls="navbarResponsive"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/sales_manager_menu">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/account/login">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <br />
+    <br />
+    <div class="container">
+      <div class="row">
+        <h1>List Customer</h1>
+      </div>
+      <br />
+
+      <table class="table table-striped table bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Customer ID</th>
+            <th>Customer Name</th>
+            <th>Total Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="customerrevenue: ${customerrevenue}">
+            <td th:text="${customerrevenue.customer_id}"></td>
+            <td th:text="${customerrevenue.customer_name}"></td>
+            <td th:text="${customerrevenue.total_revenue}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
