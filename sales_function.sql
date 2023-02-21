@@ -156,7 +156,11 @@ AS $$
 DECLARE order_status_inp INT;
 DEClARE serial_code_inp VARCHAR(255); 
 BEGIN
-if (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
+if customer_id_input not in (select customer_id from sales.customers)
+	then RAISE NOTICE 'There is no such customer';
+elsif order_id_input not in (select order_id from sales.orders)
+	then RAISE NOTICE 'There is no such order';
+elsif (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
 	then RAISE NOTICE 'You did not order this order, can not cancel order';
 else
 	begin

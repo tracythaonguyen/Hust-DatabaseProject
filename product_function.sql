@@ -68,7 +68,7 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	SELECT * FROM product.view_all_product() ORDER BY avg_rating LIMIT lt; 
+	SELECT * FROM product.view_all_product() ORDER BY avg_rating desc LIMIT lt; 
 END;
 $$;
 
@@ -252,7 +252,7 @@ BEGIN
 END;
 $$;
 
---SELECT * FROM product.view_stock();
+-- SELECT * FROM product.view_stock();
 
 
 --Function update stock
