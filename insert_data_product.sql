@@ -348,3 +348,63 @@ CALL product.generate_new_item();
 
 -- SELECT * FROM product.items;
 -- SELECT * FROM product.stocks;
+
+-- tao them item (20000 items)
+CALL product.generate_new_item();
+CALL product.generate_new_item();
+CALL product.generate_new_item();
+
+CREATE OR REPLACE FUNCTION random_between(low INT ,high INT) 
+RETURNS INT AS
+$$
+BEGIN
+RETURN floor(random()* (high-low + 1) + low);
+END;
+$$ language 'plpgsql' STRICT;
+
+-- add to cart (5000 items, 1000 customer moi nguoi 5 san pham trong cart)
+CREATE OR REPLACE PROCEDURE sales.generate_add_cart()
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+	serial_code_ids VARCHAR(255);
+	num_stock BIGINT;
+BEGIN
+	SELECT quantity INTO num_stock FROM product.stocks LIMIT 1 OFFSET 1;
+
+	FOR customer_id_input IN 1..1000 LOOP
+		FOR num IN 0..4 LOOP
+			BEGIN 
+				SELECT serial_code INTO serial_code_ids FROM product.items LIMIT 1 OFFSET (customer_id_input+num*num_stock);
+				CALL sales.add_to_cart(customer_id_input, serial_code_ids);
+			END;
+		END LOOP;
+	END LOOP;
+END;
+$$;
+
+CALL sales.generate_add_cart();
+
+-- make order (1000 orders ~ 3000 items)
+CREATE OR REPLACE PROCEDURE sales.generate_make_order()
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+	staff_id_input BIGINT;
+	num BIGINT;
+BEGIN	
+	FOR customer_id_input IN 1..500 LOOP
+		SELECT random_between(1,25) INTO num;
+		BEGIN 
+			SELECT staff_id INTO staff_id_input FROM sales.staffs WHERE active = TRUE LIMIT 1 OFFSET num;
+			CALL sales.make_order_offline(customer_id_input, staff_id_input);
+		END;
+	END LOOP;
+
+	FOR customer_id_input IN 501..1000 LOOP
+		CALL sales.make_order_online(customer_id_input);
+	END LOOP;
+END;
+$$;
+
+CALL sales.generate_make_order();

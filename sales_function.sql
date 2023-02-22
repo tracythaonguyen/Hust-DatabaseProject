@@ -88,7 +88,7 @@ BEGIN
 	and (select active from sales.staffs s where s.staff_id = staff_id_input) is FALSE
 		then RAISE NOTICE 'Staff no longer works';
 	-- Check for empty cart
-	elsif (select cart_id from sales.cart c where c.customer_id = customer_id_input) is NULL
+	elsif (select cart_id from sales.cart c where c.customer_id = customer_id_input LIMIT 1) is NULL
 		then RAISE NOTICE 'Nothing in the cart, can not make order';	
 	else
 	begin
