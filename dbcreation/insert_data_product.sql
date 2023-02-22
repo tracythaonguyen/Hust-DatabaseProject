@@ -1,40 +1,4 @@
--- PROCEDURE new_brand(brand_name)
--- check brand_name, auto generate brand_id
-CREATE OR REPLACE PROCEDURE product.new_brand(brand_name VARCHAR(255))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	INSERT INTO product.brands(brand_name) VALUES (brand_name);
-END;
-$$;
 
--- PRECEDURE new_category(category_name)
-
-CREATE OR REPLACE PROCEDURE product.new_category(category_name VARCHAR(255))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	INSERT INTO product.categories(category_name) VALUES (category_name);
-END;
-$$;
-
--- PROCEDURE new_product()
-
-CREATE OR REPLACE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
-LANGUAGE plpgsql
-AS $$
-DECLARE product_id_var BIGINT;
-BEGIN
-  --INSERT TO TABLE product
-  	INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
-  --INSERT TO TABLE STOCK
-  	SELECT p.product_id INTO product_id_var from product.products p 
-	where p.product_name = $1;
- 	INSERT INTO product.stocks VALUES (product_id_var, 0);
-END;
-$$;
-
---
 -- INSERT DATA --
 --
 
@@ -192,16 +156,6 @@ CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 -- select * from product.categories;
 -- select * from product.stocks;
 
--- config
--- PROCEDURE new_config(color,RAM,ROM,extra_charge)
-CREATE or replace PROCEDURE product.new_config(colour_input VARCHAR(255), RAM_input VARCHAR(255), ROM_input VARCHAR(255), extra_charge decimal(10, 2))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	--INSERT into table config
-	INSERT INTO product.config(color, RAM, ROM, extra_charge) VALUES (colour_input,RAM_input,ROM_input, extra_charge);
-END;
-$$;
 
 --Function to random colour
 Create or replace function random_colour() returns varchar as
@@ -252,27 +206,6 @@ CALL product.generate_new_config();
 -- WHERE i.product_id =4;
 
 -- item
--- PROCEDURE new_item(serial_code,product_id,MFG,config_id)
-CREATE OR REPLACE PROCEDURE product.new_item(serial_code_input VARCHAR(255),product_id_input bigint,MFG_input date, config_id bigint)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	-- CHECK FOR DUPLICATE serial code and product_id
-	IF NOT EXISTS (SELECT * FROM product.items WHERE serial_code = serial_code_input) AND EXISTS (SELECT * FROM product.products  WHERE product_id = product_id_input)
-	THEN
-		BEGIN
-			--INSERT into table items
-			INSERT INTO product.items VALUES (serial_code_input, product_id_input,MFG_input,config_id);
-			--Update stock 
-			UPDATE product.stocks 
-			SET quantity= quantity+1 
-			WHERE product_id=product_id_input;
-		END;
-	ELSE
-		RAISE NOTICE 'Error.... There is something wrong with your adding data!';
-	END IF;
-END;
-$$;
 
 --Function to random serial code
 Create or replace function random_string(length integer) returns varchar as
