@@ -9,6 +9,9 @@ BEGIN
 	--INSERT INTO TABLE cart
 	else
 		INSERT INTO sales.cart(customer_id,serial_code) VALUES (customer_id_input,serial_code_input);
+		UPDATE product.items
+		SET availability = FALSE 
+		WHERE serial_code=serial_code_input;
 	end if;
 END;
 $$;
@@ -20,13 +23,13 @@ DROP FUNCTION IF EXISTS  sales.view_cart;
 
 CREATE OR REPLACE FUNCTION sales.view_cart(in customer_id_input bigint)  
 RETURNS TABLE(product_name VARCHAR(255), serial_code VARCHAR(255), color VARCHAR(255), ram VARCHAR(255), rom VARCHAR(255),
-			  list_price DECIMAL(10,2), extra_charge DECIMAL(10,2))
+			  total_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
 	select  p.product_name, c.serial_code, 
-		cf.color, cf.ram, cf.rom, p.list_price , cf.extra_charge
+		cf.color, cf.ram, cf.rom, (p.list_price+ cf.extra_charge) total_price
 	from sales.cart c
 	inner join product.items i
 		on c.serial_code = i.serial_code
@@ -38,7 +41,7 @@ BEGIN
 END;
 $$;
 
-
+SELECT * FROM sales.view_cart(1);
 -- procedure remove_from_cart
 DROP PROCEDURE IF EXISTS  sales.remove_from_cart;
 
@@ -47,8 +50,26 @@ language plpgsql
 as $$
 begin
 	delete from sales.cart c where c.customer_id = customer_id_input and c.serial_code = serial_code_input;
+	UPDATE product.items
+		SET availability = TRUE 
+		WHERE serial_code=serial_code_input;
 end;
 $$;
+
+
+
+
+
+DROP PROCEDURE IF EXISTS  sales.remove_from_cart_by_id;
+
+create or replace procedure sales.remove_from_cart_by_id(customer_id_input bigint)
+language plpgsql
+as $$
+begin
+	delete from sales.cart c where c.customer_id = customer_id_input ;
+end;
+$$;
+
 
 -- make order offline
 DROP PROCEDURE IF EXISTS  sales.make_order_offline;
@@ -156,11 +177,7 @@ AS $$
 DECLARE order_status_inp INT;
 DEClARE serial_code_inp VARCHAR(255); 
 BEGIN
-if customer_id_input not in (select customer_id from sales.customers)
-	then RAISE NOTICE 'There is no such customer';
-elsif order_id_input not in (select order_id from sales.orders)
-	then RAISE NOTICE 'There is no such order';
-elsif (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
+if (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
 	then RAISE NOTICE 'You did not order this order, can not cancel order';
 else
 	begin

@@ -80,9 +80,15 @@ public class CustomerController {
 		return "itemdetails";
 	}
 
-	@GetMapping("/customer_menu/view_top_products")
-	public String viewProductCustomer(@Param("num") Integer num, Model model) {
+	@GetMapping("/customer_menu/view_top_products/{id:.+}")
+	public String viewProductCustomer(@PathVariable Long id,@Param("num") Integer num, Model model) {
+		Account account = accountRepo.findAccountById(id);
+		model.addAttribute("account",account);
+		CustomerInfo customer= customerInfoRepo.findCustomerByAccountId(account.getAccount_id());
+		model.addAttribute("customer",customer);
+
 		if (num != null) {
+			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
 			model.addAttribute("num", num);
 			model.addAttribute("productdetails", productDetailRepo.viewProductsLimit(num));
 		} else {
@@ -91,9 +97,14 @@ public class CustomerController {
 		return "customer_menu_top";
 	}
 
-	@GetMapping("/customer_menu/search_by_name")
-	public String searchProductByNameCustomer(@Param("name") String name, Model model) {
+	@GetMapping("/customer_menu/search_by_name/{id:.+}")
+	public String searchProductByNameCustomer(@PathVariable Long id,@Param("name") String name, Model model) {
+		Account account = accountRepo.findAccountById(id);
+		model.addAttribute("account",account);
+		CustomerInfo customer= customerInfoRepo.findCustomerByAccountId(account.getAccount_id());
+		model.addAttribute("customer",customer);
 		if (name != null) {
+			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
 			model.addAttribute("name", name);
 			List<ProductDetail> productdetails = productDetailRepo.searchProductByName(name);
 			model.addAttribute("productdetails", productdetails);
@@ -103,9 +114,14 @@ public class CustomerController {
 		return "customer_menu_by_name";
 	}
 
-	@GetMapping("/customer_menu/search_by_brand")
-	public String searchProductByBrandCustomer(@Param("brand") String brand, Model model) {
+	@GetMapping("/customer_menu/search_by_brand/{id:.+}")
+	public String searchProductByBrandCustomer(@PathVariable Long id,@Param("brand") String brand, Model model) {
+		Account account = accountRepo.findAccountById(id);
+		model.addAttribute("account",account);
+		CustomerInfo customer= customerInfoRepo.findCustomerByAccountId(account.getAccount_id());
+		model.addAttribute("customer",customer);
 		if (brand != null) {
+			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
 			model.addAttribute("brand", brand);
 			List<ProductDetail> productdetails = productDetailRepo.searchProductByBrand(brand);
 			model.addAttribute("productdetails", productdetails);
@@ -115,9 +131,14 @@ public class CustomerController {
 		return "customer_menu_by_brand";
 	}
 
-	@GetMapping("/customer_menu/search_by_category")
-	public String searchProductByCategoryCustomer(@Param("category") String category, Model model) {
+	@GetMapping("/customer_menu/search_by_category/{id:.+}")
+	public String searchProductByCategoryCustomer(@PathVariable Long id,@Param("category") String category, Model model) {
+		Account account = accountRepo.findAccountById(id);
+		model.addAttribute("account",account);
+		CustomerInfo customer= customerInfoRepo.findCustomerByAccountId(account.getAccount_id());
+		model.addAttribute("customer",customer); 
 		if (category != null) {
+			model.addAttribute("productdetails", productDetailRepo.viewAllProduct());
 			model.addAttribute("category", category);
 			List<ProductDetail> productdetails = productDetailRepo.searchProductByCategory(category);
 			model.addAttribute("productdetails", productdetails);

@@ -24,7 +24,7 @@
 	<!-- Navigation -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
 		<div class="container">
-			<a class="navbar-brand" href="/customer_menu">THE GIOI DI DONG</a>
+			<a class="navbar-brand" th:href="@{'/customer_menu/' + ${account.account_id}}">THE GIOI DI DONG</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarResponsive" aria-controls="navbarResponsive"
 				aria-expanded="false" aria-label="Toggle navigation">
@@ -51,11 +51,11 @@
 			id="dropdownMenuButton" data-bs-toggle="dropdown"
 			aria-haspopup="true" aria-expanded="false">Search</button>
 		<div class="dropdown-menu">
-			<a class="dropdown-item" href="/customer_menu/search_by_name">By
-				Name</a> <a class="dropdown-item" href="/customer_menu/search_by_brand">By
+			<a class="dropdown-item" th:href="@{'/customer_menu/search_by_name/'+${account.account_id}}">By
+				Name</a> <a class="dropdown-item" th:href="@{'/customer_menu/search_by_brand/'+${account.account_id}}">By
 				Brand</a> <a class="dropdown-item"
-				href="/customer_menu/search_by_category">By Category</a> <a
-				class="dropdown-item" href="/customer_menu/view_top_products">Top
+				th:href="@{'/customer_menu/search_by_category/'+${account.account_id}}">By Category</a> <a
+				class="dropdown-item" th:href="@{'/customer_menu/view_top_products/'+${account.account_id}}">Top
 				Popular Item</a>
 		</div> <br>
 	<div class="container">
