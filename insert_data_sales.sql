@@ -271,3 +271,20 @@ SELECT * from sales.customers;
 SELECT * FROM sys.accounts;
 ROLLBACK ;
 
+
+--Generate order 
+DROP PROCEDURE IF EXISTS sales.generate_new_order;
+CREATE OR REPLACE PROCEDURE sales.generate_new_order()
+LANGUAGE plpgsql
+AS $$
+DECLARE num BIGINT ;
+BEGIN
+	num := 1;
+	FOR cnt in 1..1000 LOOP
+    	
+    END LOOP;
+END;
+$$;
+
+
+

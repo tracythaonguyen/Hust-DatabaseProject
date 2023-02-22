@@ -1,18 +1,12 @@
 package hust.globalict.entity.sales;
 
-import java.io.Serializable;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import hust.globalict.entity.sys.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +19,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "sales.customers", catalog = "thegioididong")
-public class Customer implements Serializable{
+@Table(name = "sales.view_customer_info", catalog = "thegioididong")
+public class CustomerInfo {
 	@Column(name = "customer_id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +46,10 @@ public class Customer implements Serializable{
 	
 	@Column(name = "account_id")
 	private long account_id;
-
 	
+	@Column(name = "user_name", length = 255, nullable = false,unique= true)
+	private String user_name;
+	
+	@Column(name = "pass_word", length = 255, nullable = false)
+	private String pass_word;
 }

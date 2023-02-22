@@ -38,19 +38,20 @@ public class Item implements Serializable{
 	@Column(name = "serial_code")
 	private String serial_code;
 	
-	@JoinColumn(name = "product_id")
-	@ManyToOne(cascade = CascadeType.ALL, optional = false)
-	private Product product;
+	
+	@Column(name = "product_id")
+	private Long product_id;
+	
 	
 	@Column(name = "MFG")
 	@DateTimeFormat(pattern="yyyy-mm-dd")
     private Date MFG;
 	
-	@JoinColumn(name = "config_id")
-	@ManyToOne(cascade = CascadeType.ALL, optional = false)
-	private Config config;
+	@Column(name = "config_id")
+	private Long config_id;
 	
-	@OneToOne(mappedBy = "item")
-    private OrderDetail orderdetail;
+	
+	@Column(name = "availability")
+	private Boolean availability;
 	
 }

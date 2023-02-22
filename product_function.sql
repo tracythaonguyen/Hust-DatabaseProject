@@ -57,7 +57,7 @@ BEGIN
 END;
 $$;
 
-select * from product.view_active_product();
+-- select * from product.view_active_product();
 
 -- - View some products.
 

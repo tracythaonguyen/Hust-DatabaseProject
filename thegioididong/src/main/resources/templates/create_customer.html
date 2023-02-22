@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Account Registration</title>
+</head>
+<style type="text/css">
+    label {
+        display: inline-block;
+        width: 200px;
+        margin: 5px;
+        text-align: left;
+    }
+    input[type=text], input[type=password], select {
+        display: inline-block;
+        width: 200px;
+    }
+    input[type=radio] {
+        margin-left: 45px;
+    }
+    input[type=checkbox] {
+        margin-right: 190px;
+    }  
+    button {
+        padding: 5px;
+        margin: 10px;
+    }
+</style>
+<body>
+<div align="center">
+    <h1>Account Registration</h1>
+    <form action="#" th:action="@{/account/save}" th:object="${cus}">
+        <label>First name:</label>
+        <input type="text" th:field="*{first_name}" /><br/>
+ 		
+ 		<label>Last name:</label>
+        <input type="text" th:field="*{last_name}" /><br/>
+        
+        <label>Phone:</label>
+        <input type="text" th:field="*{phone}" /><br/>
+ 
+        <label>E-mail:</label>
+        <input type="email" th:field="*{email}" /><br/>
+        
+        <label>Street:</label>
+        <input type="text" th:field="*{street}" /><br/>
+        
+        <label>City:</label>
+        <input type="text" th:field="*{city}" /><br/>
+        
+        <label>User Name:</label>
+        <input type="text" th:field="*{user_name}" /><br/>
+ 
+        <label>Password:</label>
+        <input type="password" th:field="*{pass_word}" /><br/>
+ 
+
+        <button type="submit">Register</button>    
+    </form>
+</div>
+</body>
+</html>
