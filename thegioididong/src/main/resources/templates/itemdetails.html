@@ -68,7 +68,7 @@
 					<td th:text="${item.ram}"></td>
 					<td th:text="${item.rom}"></td>
 					<td th:text="${item.total_price}"></td>
-					<td><a href="/carts" class="btn btn-info"> Add to Cart </a> 
+					<td><a th:href="@{'/customer/add_cart/'+${product_id}+'/'+${item.serial_code}+'/' + ${customer.customer_id}}" class="btn btn-info"> Add to Cart </a> 
 					<a href="/orders" class="btn btn-success"> Buy </a>
 					</td>
 				</tr>

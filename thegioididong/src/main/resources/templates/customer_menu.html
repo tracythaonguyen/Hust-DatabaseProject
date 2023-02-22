@@ -32,7 +32,7 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarResponsive">
 				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a class="nav-link" href="/cartdetails">Cart</a>
+					<li class="nav-item"><a class="nav-link" th:href="@{'/customer/cart/' + ${customer.customer_id}}">Cart</a>
 					</li>
 					<li class="nav-item"><a class="nav-link" href="/order_history">Order
 							History</a></li>
@@ -85,7 +85,7 @@
 					<td th:text="${productdetail.total_review}"></td>
 					<td th:text="${productdetail.discontinued}"></td>
 					<td><a
-						th:href="@{'/itemdetails/' + ${productdetail.product_id}}"
+						th:href="@{'/itemdetails/' + ${productdetail.product_id}+'/'+${customer.customer_id}}"
 						id="btnDelete" title="Detail" class="btn btn-primary">Detail</a></td>
 				</tr>
 			</tbody>
