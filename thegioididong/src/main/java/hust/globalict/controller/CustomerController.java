@@ -62,18 +62,20 @@ public class CustomerController {
 		return "customer_menu";
 	}
 
-	@GetMapping("/itemdetails/{id:.+}")
-	public String viewAvailableItem(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+	@GetMapping("/itemdetails/{product_id:.+}/{customer_id:.+}")
+	public String viewAvailableItem(@PathVariable Long product_id,@PathVariable Long customer_id, Model model, RedirectAttributes redirectAttributes) {
 		try {
-			if (id != null) {
-				model.addAttribute("items", itemDetailRepo.viewAllItem(id));
-				redirectAttributes.addFlashAttribute("message", "Delete successfully: " + id);
+			if (product_id != null) {
+				CustomerInfo customer= customerInfoRepo.findCustomerById(customer_id);
+				model.addAttribute("customer",customer);
+				model.addAttribute("items", itemDetailRepo.viewAllItem(product_id));
+				redirectAttributes.addFlashAttribute("message", "Delete successfully: " + product_id);
 			} else {
 				redirectAttributes.addFlashAttribute("message", "The file does not exist!");
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message",
-					"Could not delete product with id: " + id + ". Error: " + e.getMessage());
+					"Could not delete product with id: " + product_id + ". Error: " + e.getMessage());
 		}
 		return "itemdetails";
 	}
