@@ -9,9 +9,6 @@ BEGIN
 	--INSERT INTO TABLE cart
 	else
 		INSERT INTO sales.cart(customer_id,serial_code) VALUES (customer_id_input,serial_code_input);
-		UPDATE product.items
-		SET availability = FALSE 
-		WHERE serial_code=serial_code_input;
 	end if;
 END;
 $$;
@@ -50,9 +47,6 @@ language plpgsql
 as $$
 begin
 	delete from sales.cart c where c.customer_id = customer_id_input and c.serial_code = serial_code_input;
-	UPDATE product.items
-		SET availability = TRUE 
-		WHERE serial_code=serial_code_input;
 end;
 $$;
 
@@ -177,46 +171,51 @@ AS $$
 DECLARE order_status_inp INT;
 DEClARE serial_code_inp VARCHAR(255); 
 BEGIN
-if (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
-	then RAISE NOTICE 'You did not order this order, can not cancel order';
+if customer_id_input not in (select customer_id from sales.customers)
+  then RAISE NOTICE 'There is no such customer';
+elsif order_id_input not in (select order_id from sales.orders)
+  then RAISE NOTICE 'There is no such order';
+elsif (SELECT customer_id FROM sales.orders WHERE order_id=order_id_input) != customer_id_input
+  then RAISE NOTICE 'You did not order this order, can not cancel order';
 else
-	begin
-	SELECT order_status INTO order_status_inp FROM sales.orders WHERE order_id=order_id_input;
-	IF(order_status_inp = 0)
-	THEN 
-		BEGIN
-			SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
-			while serial_code_inp is not null loop
-				-- UPDATE availability of the item
-				UPDATE product.items
-				SET availability= TRUE
-				WHERE serial_code=serial_code_inp;
-				--delete coverage 
-				DELETE FROM sales.coverages 
-				WHERE serial_code=serial_code_inp;
-				-- delete item from order_detail
-				DELETE FROM sales.order_details 
-				WHERE serial_code=serial_code_inp;
-				--UPDATE stock
-				UPDATE product.stocks 
-				SET quantity= quantity+1
-				WHERE product_id =(SELECT product_id 
-								  FROM product.items
-								  WHERE serial_code=serial_code_inp);
-				SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
-			end loop;
-			UPDATE sales.orders
-			set order_status = 2 where order_id = order_id_input;		
-		END;
-	ELSIF (order_status_inp = 1)
-		then RAISE NOTICE 'Order already processed, can not cancel';
-	else
-		RAISE NOTICE 'Order already canceled';
-	END IF;
-	end;
+  begin
+  SELECT order_status INTO order_status_inp FROM sales.orders WHERE order_id=order_id_input;
+  IF(order_status_inp = 0)
+  THEN 
+    BEGIN
+      SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
+      while serial_code_inp is not null loop
+        -- UPDATE availability of the item
+        UPDATE product.items
+        SET availability= TRUE
+        WHERE serial_code=serial_code_inp;
+        --delete coverage 
+        DELETE FROM sales.coverages 
+        WHERE serial_code=serial_code_inp;
+        -- delete item from order_detail
+        DELETE FROM sales.order_details 
+        WHERE serial_code=serial_code_inp;
+        --UPDATE stock
+        UPDATE product.stocks 
+        SET quantity= quantity+1
+        WHERE product_id =(SELECT product_id 
+                  FROM product.items
+                  WHERE serial_code=serial_code_inp);
+        SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
+      end loop;
+      UPDATE sales.orders
+      set order_status = 2 where order_id = order_id_input;   
+    END;
+  ELSIF (order_status_inp = 1)
+    then RAISE NOTICE 'Order already processed, can not cancel';
+  else
+    RAISE NOTICE 'Order already canceled';
+  END IF;
+  end;
 end if;
 END;
 $$;
+
 
 --call sales.cancel_order(1, 16);
 --Function view customerinfo
