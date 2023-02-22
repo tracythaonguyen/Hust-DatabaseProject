@@ -41,7 +41,7 @@ BEGIN
 END;
 $$;
 
-SELECT * FROM sales.view_cart(1);
+-- SELECT * FROM sales.view_cart(1);
 -- procedure remove_from_cart
 DROP PROCEDURE IF EXISTS  sales.remove_from_cart;
 
@@ -259,9 +259,9 @@ BEGIN
 	WHERE account_id = (SELECT account_id FROM sales.customers WHERE customer_id=customer_id_input);
 END;
 $$;
-CALL sales.update_info(1,'Minh','Do','0865943283','minhdotpc@gmail.com','Tran Nguyen Han','Hai Phong','minhdo','220702');
-select * from sales.view_customer_info() WHERE customer_id=2;
-select * from sys.accounts;
+-- CALL sales.update_info(1,'Minh','Do','0865943283','minhdotpc@gmail.com','Tran Nguyen Han','Hai Phong','minhdo','220702');
+-- select * from sales.view_customer_info() WHERE customer_id=2;
+-- select * from sys.accounts;
 --Function view_order_history
 DROP function IF EXISTS  sales.view_order_history;
 
@@ -498,4 +498,4 @@ BEGIN
 END;
 $$;
 
-SELECT * FROM sales.get_customer_by_account_id(2);
+-- SELECT * FROM sales.get_customer_by_account_id(2);

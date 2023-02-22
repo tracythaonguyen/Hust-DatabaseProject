@@ -187,10 +187,10 @@ CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 --delete from product.products;
 
 
-select * from product.products;
-select * from product.brands;
-select * from product.categories;
-select * from product.stocks;
+-- select * from product.products;
+-- select * from product.brands;
+-- select * from product.categories;
+-- select * from product.stocks;
 
 -- config
 -- PROCEDURE new_config(color,RAM,ROM,extra_charge)
@@ -247,9 +247,9 @@ $$;
 
 CALL product.generate_new_config();
 
-SELECT * FROM product.items i
-JOIN product.config c on i.config_id=c.config_id
-WHERE i.product_id =4;
+-- SELECT * FROM product.items i
+-- JOIN product.config c on i.config_id=c.config_id
+-- WHERE i.product_id =4;
 
 -- item
 -- PROCEDURE new_item(serial_code,product_id,MFG,config_id)
@@ -305,7 +305,7 @@ end;
 $$ language plpgsql;
 
 
-DROP FUNCTION return_id_category(bigint)
+DROP FUNCTION return_id_category(bigint);
 CREATE OR REPLACE FUNCTION return_id_category(product_ids BIGINT) RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
@@ -346,5 +346,5 @@ $$;
 
 CALL product.generate_new_item();
 
-SELECT * FROM product.items;
-SELECT * FROM product.stocks;
+-- SELECT * FROM product.items;
+-- SELECT * FROM product.stocks;

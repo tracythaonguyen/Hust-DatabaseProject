@@ -5,7 +5,7 @@ insert into sys.roles values (0, 'Customer');
 insert into sys.roles values (1, 'Product Manager');
 insert into sys.roles values (2, 'Sales Manager');
 
-select * from sys.roles;
+-- select * from sys.roles;
 
 -- Account
 create or replace procedure sys.new_account(user_name1 varchar(255), pass_word1 varchar (255), role_id1 bigint)
@@ -90,13 +90,13 @@ call sys.new_account('thaobaymau', 'thao123', 1);
 call sys.new_account('dtm', 'minhdo123', 0);
 call sys.new_customer('Minh','Do','090323232','minhdotpc@gmail.com','HBT','HN','dtm','dtm');
 call sys.new_customer('Minh','Do','0123456787','minhdotpc12@gmail.com','HBT','HN','dtm2','dtm2');
-select * FROM sales.customers;
-select * from sys.accounts;
+-- select * FROM sales.customers;
+-- select * from sys.accounts;
 ROLLBACK;
 
-DROP OWNED BY ktrung1709;
-drop owned by thaobaymau;
-drop user  IF EXISTS ktrung1709;
-drop user IF EXISTS thaobaymau;
-DROP OWNED BY dtm; 
-drop user IF EXISTS dtm;
+-- DROP OWNED BY ktrung1709;
+-- drop owned by thaobaymau;
+-- drop user  IF EXISTS ktrung1709;
+-- drop user IF EXISTS thaobaymau;
+-- DROP OWNED BY dtm; 
+-- drop user IF EXISTS dtm;

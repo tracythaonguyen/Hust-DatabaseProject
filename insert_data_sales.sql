@@ -185,11 +185,11 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
+-- BEGIN;
+-- TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
 CALL sales.generate_new_staff();
-SELECT * from sales.staffs;
-ROLLBACK ;
+-- SELECT * from sales.staffs;
+-- ROLLBACK ;
 
 -- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
 -- -- Auto generate customer_id
@@ -264,10 +264,10 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-TRUNCATE TABLE sales.customers RESTART IDENTITY CASCADE;
+-- BEGIN;
+-- TRUNCATE TABLE sales.customers RESTART IDENTITY CASCADE;
 CALL sales.generate_new_customer();
-SELECT * from sales.customers;
-SELECT * FROM sys.accounts;
-ROLLBACK ;
+-- SELECT * from sales.customers;
+-- SELECT * FROM sys.accounts;
+-- ROLLBACK ;
 
