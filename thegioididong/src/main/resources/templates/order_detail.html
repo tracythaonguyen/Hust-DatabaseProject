@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-<meta charset="ISO-8859-1">
-<title>Cart Details</title>
+<meta charset="ISO-8859-1" />
+<title>Order History</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-	crossorigin="anonymous">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	crossorigin="anonymous" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
+	rel="stylesheet" />
 <script
 	src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
 	integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
 	crossorigin="anonymous"></script>
-
 </head>
 <body>
+
 	<!-- Navigation -->
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
 		<div class="container">
 			<a class="navbar-brand"
-				th:href="@{'/customer_menu/' + ${customer.account_id}}">THE GIOI
-				DI DONG</a>
+				th:href="@{'/order_history/' + ${customer.customer_id}}">Order
+				History</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarResponsive" aria-controls="navbarResponsive"
 				aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,9 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarResponsive">
 				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{'/customer/cart/' + ${customer.customer_id}}">Cart</a>
+					</li>
 					<li class="nav-item"><a class="nav-link"
 						th:href="@{'/order_history/' + ${customer.customer_id}}">Order
 							History</a></li>
@@ -45,44 +48,35 @@
 	</nav>
 	<br />
 	<br />
-	<br>
-	<br>
-	<div align="center">
-		<table class="table table-striped table bordered">
-			<thead class="table-dark">
-				<tr>
-					<th>Product Name</th>
-					<th>Serial Code</th>
-					<th>Color</th>
-					<th>RAM</th>
-					<th>ROM</th>
-					<th>Total Price</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="cartdetail: ${cartdetails}">
-					<td th:text="${cartdetail.product_name}"></td>
-					<td th:text="${cartdetail.serial_code}"></td>
-					<td th:text="${cartdetail.color}"></td>
-					<td th:text="${cartdetail.ram}"></td>
-					<td th:text="${cartdetail.rom}"></td>
-					<td th:text="${cartdetail.total_price}"></td>
-					<td><a
-						th:href="@{'/deletefromcart/' + ${customer.customer_id} +'/'+${cartdetail.serial_code}}"
-						id="btnDelete" title="Delete" class="btn btn-danger">Delete</a>
-				</tr>
-			</tbody>
-		</table>
-		<br /> <br />
-		<div align="center">
-			<div class="col-lg-5">
-				<a th:href="@{'/makeorder/' + ${customer.customer_id}}"
-					class="btn btn-primary btn-sm mb-3">Make Order</a>
-			</div>
-		</div>
+	<br />
+	<br />
+	<table class="table table-striped table bordered">
+		<thead class="table-dark">
+			<tr>
+				<th>Product Name</th>
+				<th>Serial Code</th>
+				<th>Color</th>
+				<th>RAM</th>
+				<th>ROM</th>
+				<th>List Price</th>
+				<th>Extra Charge</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="orderdetail: ${orderdetails}">
+				<td th:text="${orderdetail.product_name}"></td>
+				<td th:text="${orderdetail.serial_code}"></td>
+				<td th:text="${orderdetail.color}"></td>
+				<td th:text="${orderdetail.ram}"></td>
+				<td th:text="${orderdetail.rom}"></td>
+				<td th:text="${orderdetail.list_price}"></td>
+				<td th:text="${orderdetail.extra_charge}"></td>
+				
+			</tr>
+		</tbody>
+	</table>
 
-	</div>
-
+<a th:href="@{'/order_history/'+ ${customer.customer_id}}"
+		id="btnDelete" title="Back" class="btn btn-primary">Back</a>
 </body>
 </html>

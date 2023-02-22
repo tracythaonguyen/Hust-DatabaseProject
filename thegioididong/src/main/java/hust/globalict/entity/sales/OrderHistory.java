@@ -1,6 +1,5 @@
 package hust.globalict.entity.sales;
 
-import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -24,19 +23,23 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "sales.coverages", catalog = "thegioididong")
-public class Coverage implements Serializable{
-	@Column(name = "coverage_id")
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long coverage_id;
-	
-	@Column(name = "serial_code")
-	private String serial_code;
+@Table(name = "sales.view_order_history", catalog = "thegioididong")
+public class OrderHistory {
+	@Column(name = "order_id")
+	  @Id
+	  @GeneratedValue(strategy = GenerationType.IDENTITY)
+	  private long order_id;
 
-	
-	@Column(name = "coverages_expired_date")
-	@DateTimeFormat(pattern="yyyy-mm-dd")
-    private Date coverages_expired_date;
-	
+	  @Column(name = "order_status")
+	  private String order_status;
+
+	  @Column(name = "order_date")
+	  @DateTimeFormat(pattern = "yyyy-mm-dd")
+	  private Date order_date;
+
+	  @Column(name = "staff_id", nullable= true	)
+	  private Long staff_id;
+
+	  @Column(name = "total_amount")
+	  private double total_amount;
 }

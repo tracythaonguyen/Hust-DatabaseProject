@@ -88,7 +88,7 @@ BEGIN
 	and (select active from sales.staffs s where s.staff_id = staff_id_input) is FALSE
 		then RAISE NOTICE 'Staff no longer works';
 	-- Check for empty cart
-	elsif (select cart_id from sales.cart c where c.customer_id = customer_id_input) is NULL
+	elsif NOT EXISTS (select cart_id from sales.cart c where c.customer_id = customer_id_input) 
 		then RAISE NOTICE 'Nothing in the cart, can not make order';	
 	else
 	begin
@@ -158,6 +158,11 @@ BEGIN
 	call sales.make_order_offline(customer_id_input, NULL);
 END;
 $$;
+
+--BEGIN ; 
+--call sales.make_order_offline(1, NULL);
+--select * From sales.orders;
+--ROLLBACK;
 
 --select * from sales.orders;
 --select * from sales.order_details where order_id = 16;
@@ -499,3 +504,7 @@ END;
 $$;
 
 -- SELECT * FROM sales.get_customer_by_account_id(2);
+DELETE  FROM sales.coverages;
+DELETE  FROM sales.order_details;
+DELETE FROM sales.orders;
+SELECT * FROM sales.view_order_history(1001);

@@ -27,23 +27,18 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "sales.orders_details", catalog = "thegioididong")
-public class OrderDetail implements Serializable{
+public class OrderDetail implements Serializable {
 	@Column(name = "order_detail_id")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long order_detail_id;
-	
-	@JoinColumn(name = "order_id")
-	@ManyToOne(cascade = CascadeType.ALL, optional = false)
-	private Order order;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "serial_code", referencedColumnName = "serial_code")
-	private Item item;
-	
-	@OneToOne(mappedBy = "item1")
-    private Coverage coverage;
-	
+
+	@Column(name = "order_id")
+	private long order_id;
+
+	@Column(name = "serial_code")
+	private String serial_code;
+
 	@Column(name = "discount")
 	private float discount;
 }

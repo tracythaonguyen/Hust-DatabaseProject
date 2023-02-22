@@ -79,4 +79,11 @@ public class CartController {
 		}
 		return "cart";
 	}
+	
+	@GetMapping("/makeorder/{id:.+}")
+	public String makeOrder(@PathVariable Long id, Model model) {
+		CustomerInfo customer = customerInfoRepo.findCustomerById(id);
+		model.addAttribute("customer", customer);
+		return "cart";
+	}
 }
