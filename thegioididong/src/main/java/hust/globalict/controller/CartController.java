@@ -84,6 +84,7 @@ public class CartController {
 	public String makeOrder(@PathVariable Long id, Model model) {
 		CustomerInfo customer = customerInfoRepo.findCustomerById(id);
 		model.addAttribute("customer", customer);
+		cartRepo.makeOrder(id);
 		return "cart";
 	}
 }

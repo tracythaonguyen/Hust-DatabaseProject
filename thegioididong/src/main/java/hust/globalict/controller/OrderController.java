@@ -54,5 +54,19 @@ public class OrderController {
 	    model.addAttribute("customer", customer);
 	    model.addAttribute("orderdetails", orderHisDeRepo.viewDetailOrderHistory(customer_id,order_id));
     return "order_detail";
+  
   }
+  
+  
+  @GetMapping("/cancelorder/{customer_id:.+}/{order_id:.+}")
+  public String CancelOrder(@PathVariable Long customer_id,@PathVariable Long order_id, Model model) {
+	    CustomerInfo customer = customerInfoRepo.findCustomerById(customer_id);
+	    model.addAttribute("customer", customer);
+	    orderRepo.cancelOrder(customer_id,order_id);
+	    List<OrderHistory> orders = orderHisRepo.viewOrderDetailById(customer_id);
+	    model.addAttribute("orders", orders);
+  return "order_history";
+
 }
+}
+

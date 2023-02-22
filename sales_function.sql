@@ -9,9 +9,6 @@ BEGIN
 	--INSERT INTO TABLE cart
 	else
 		INSERT INTO sales.cart(customer_id,serial_code) VALUES (customer_id_input,serial_code_input);
-		UPDATE product.items
-		SET availability = FALSE 
-		WHERE serial_code=serial_code_input;
 	end if;
 END;
 $$;
@@ -50,9 +47,6 @@ language plpgsql
 as $$
 begin
 	delete from sales.cart c where c.customer_id = customer_id_input and c.serial_code = serial_code_input;
-	UPDATE product.items
-		SET availability = TRUE 
-		WHERE serial_code=serial_code_input;
 end;
 $$;
 
@@ -504,7 +498,3 @@ END;
 $$;
 
 -- SELECT * FROM sales.get_customer_by_account_id(2);
-DELETE  FROM sales.coverages;
-DELETE  FROM sales.order_details;
-DELETE FROM sales.orders;
-SELECT * FROM sales.view_order_history(1001);

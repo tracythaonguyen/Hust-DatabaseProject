@@ -62,6 +62,7 @@
 			</tr>
 		</thead>
 		<tbody>
+		<div align="center">
 			<tr th:each="order: ${orders}">
 				<td th:text="${order.order_id}"></td>
 				<td th:text="${order.order_status}"></td>
@@ -70,8 +71,14 @@
 				<td th:text="${order.total_amount}"></td>
 				<td><a
 					th:href="@{'/order_history/detail/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
-					id="btnDelete" title="Detail" class="btn btn-primary">Detail</a></td>
+					id="btnDelete" title="Detail" class="btn btn-primary">Detail</a>
+					<a
+					th:href="@{'/cancelorder/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
+					id="btnDelete" title="Cancel Order" class="btn btn-danger">Cancel Order</a></td>
+					
 			</tr>
+		
+		</div>
 		</tbody>
 	</table>
 	</div>
