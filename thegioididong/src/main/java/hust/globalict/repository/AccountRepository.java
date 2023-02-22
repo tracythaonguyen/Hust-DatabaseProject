@@ -18,4 +18,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>{
 	 @Query(value="SELECT role_id FROM sys.accounts a WHERE a.user _name = :user_name ;",nativeQuery= true)
 	 public int getRole(@Param("user_name") String user_name);
 	 
+	 @Query(value="CALL sales.new_customer(:first_name ,:last_name , :phone , :email ,:street ,:city , :user_name, :pass_word);",nativeQuery= true)
+	 public int newCustomer(@Param("first_name") String first_name,@Param("last_name") String last_name,@Param("phone") String phone,@Param("email") String email,@Param("street") String street,@Param("city") String city,@Param("user_name") String user_name,@Param("pass_word") String pass_word);
+	 
 }
