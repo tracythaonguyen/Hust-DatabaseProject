@@ -7,5 +7,5 @@ import hust.globalict.entity.sales.OrderDetail;
 
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long>{
-
+	
 }

@@ -27,4 +27,12 @@ public interface CartRepository extends JpaRepository<Cart, Long>{
 	    nativeQuery = true
 	  )
 	  void deleteFromCart(@Param("customer_id") Long customer_id,@Param("serial_code") String serial_code);
+	
+	@Transactional
+	  @Modifying(clearAutomatically = true)
+	  @Query(
+	    value = "CALL sales.make_order_online(:customer_id)",
+	    nativeQuery = true
+	  )
+	  void makeOrder(@Param("customer_id") Long customer_id);
 }

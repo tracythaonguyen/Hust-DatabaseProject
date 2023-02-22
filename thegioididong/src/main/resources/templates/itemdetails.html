@@ -33,7 +33,7 @@
 				<ul class="navbar-nav ml-auto">
 					<li class="nav-item"><a class="nav-link"  th:href="@{'/customer/cart/' + ${customer.customer_id}}">Cart</a>
 					</li>
-					<li class="nav-item"><a class="nav-link" href="/order_history">Order
+					<li class="nav-item"><a class="nav-link" th:href="@{'/order_history/' + ${customer.customer_id}}">Order
 							History</a></li>
 					<li class="nav-item"><a class="nav-link" href="/account/login">Logout</a>
 					</li>
