@@ -26,4 +26,10 @@ public interface CustomerInfoRepository extends JpaRepository<CustomerInfo, Long
 			@Param("last_name") String last_name, @Param("phone") String phone, @Param("email") String email,
 			@Param("street") String street, @Param("city") String city, @Param("user_name") String user_name,
 			@Param("pass_word") String pass_word);
+	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+	@Query(value="CALL sales.new_customer(:first_name ,:last_name , :phone , :email ,:street ,:city , :user_name, :pass_word);",nativeQuery= true)
+	void newCustomer(@Param("first_name") String first_name,@Param("last_name") String last_name,@Param("phone") String phone,@Param("email") String email,@Param("street") String street,@Param("city") String city,@Param("user_name") String user_name,@Param("pass_word") String pass_word);
+	 
 }

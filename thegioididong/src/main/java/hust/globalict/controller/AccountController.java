@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import hust.globalict.entity.sales.CustomerInfo;
 import hust.globalict.entity.sys.Account;
 import hust.globalict.repository.AccountRepository;
+import hust.globalict.repository.CustomerInfoRepository;
 
 @Controller
 public class AccountController {
 	@Autowired
 	private AccountRepository accountRepo;
+	
+	@Autowired
+	private CustomerInfoRepository customerInfoRepo;
 
 	@GetMapping("/account/login")
 	public String loginPage(@Param("name") String user_name, @Param("password") String password, Model model) {
@@ -63,7 +67,16 @@ public class AccountController {
 	}
 	@GetMapping("/account/save")
 	public String saveNewCustomer(@ModelAttribute("cus")CustomerInfo cus, Model model) {
-		
+		model.addAttribute("cus",cus);
+		model.addAttribute("first_name", cus.getFirst_name());
+		model.addAttribute("last_name", cus.getLast_name());
+		model.addAttribute("phone", cus.getPhone());
+		model.addAttribute("email", cus.getEmail());
+		model.addAttribute("street 	", cus.getStreet());
+		model.addAttribute("city", cus.getCity());
+		model.addAttribute("user_name", cus.getUser_name());
+		model.addAttribute("pass_word", cus.getPass_word());
+		customerInfoRepo.newCustomer(cus.getFirst_name(),cus.getLast_name(),cus.getPhone(),cus.getEmail(),cus.getStreet(),cus.getCity(),cus.getUser_name(),cus.getPass_word());
 		return "login";
 	}
 }

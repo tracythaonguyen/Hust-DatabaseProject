@@ -173,7 +173,7 @@ public class CustomerController {
 		model.addAttribute("email", customer.getEmail());
 		model.addAttribute("street 	", customer.getStreet());
 		model.addAttribute("city", customer.getCity());
-		model.addAttribute("use_name", customer.getUser_name());
+		model.addAttribute("user_name", customer.getUser_name());
 		model.addAttribute("pass_word", customer.getPass_word());
 		
 		
