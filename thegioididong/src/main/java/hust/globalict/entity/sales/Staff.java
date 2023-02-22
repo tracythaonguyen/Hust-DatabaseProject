@@ -42,7 +42,7 @@ public class Staff implements Serializable {
   @Column(name = "street", length = 255, nullable = false)
   private String street;
 
-  @Column(name = "cỉty", length = 255, nullable = false)
+  @Column(name = "city", length = 255, nullable = false)
   private String city;
 
   @Column(name = "active")
