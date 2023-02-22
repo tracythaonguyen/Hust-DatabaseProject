@@ -273,7 +273,8 @@ ROLLBACK ;
 
 
 --Generate order 
-CREATE OR REPLACE PROCEDURE sales.generate_new_customer()
+DROP PROCEDURE IF EXISTS sales.generate_new_order;
+CREATE OR REPLACE PROCEDURE sales.generate_new_order()
 LANGUAGE plpgsql
 AS $$
 DECLARE num BIGINT ;
@@ -284,5 +285,6 @@ BEGIN
     END LOOP;
 END;
 $$;
+
 
 
