@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1" />
-<title>Order History</title>
+<title>Order History By Date</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -48,38 +48,49 @@
 	</nav>
 	<br />
 	<br />
+		<form
+		th:action="@{'/search_order_by_date/'+${customer.customer_id}+'/'}">
+		Enter order date: <input type="text" name="order_date" id="order_date"
+			size="50" th:value="${order_date}" required /> &nbsp; <input
+			type="submit" value="Search" /> &nbsp;
+	</form>
+	<br />
+	<a th:href="@{'/search_order_by_date/'+${customer.customer_id}}"
+		id="btnDelete" title="Clear" class="btn btn-primary">Clear</a>
+	<br />
 	<br />
 	<br />
 	<table class="table table-striped table bordered">
 		<thead class="table-dark">
 			<tr>
-				<th>Product Name</th>
-				<th>Serial Code</th>
-				<th>Color</th>
-				<th>RAM</th>
-				<th>ROM</th>
-				<th>List Price</th>
-				<th>Extra Charge</th>
-				<th>Action</th>
+				<th>Order ID</th>
+				<th>Order Status</th>
+				<th>Order Date</th>
+				<th>Staff ID</th>
+				<th>Total Amount</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr th:each="orderdetail: ${orderdetails}">
-				<td th:text="${orderdetail.product_name}"></td>
-				<td th:text="${orderdetail.serial_code}"></td>
-				<td th:text="${orderdetail.color}"></td>
-				<td th:text="${orderdetail.ram}"></td>
-				<td th:text="${orderdetail.rom}"></td>
-				<td th:text="${orderdetail.list_price}"></td>
-				<td th:text="${orderdetail.extra_charge}"></td>
-				<td><a
-						th:href="@{'/rate_product/' + ${orderdetail.serial_code}+'/'+${customer.customer_id}}"
-						id="btnDelete" title="Detail" class="btn btn-success">Rate Product</a></td>
-			</tr>
+			<div align="center">
+				<tr th:each="order: ${orders}">
+					<td th:text="${order.order_id}"></td>
+					<td th:text="${order.order_status}"></td>
+					<td th:text="${order.order_date}"></td>
+					<td th:text="${order.staff_id}"></td>
+					<td th:text="${order.total_amount}"></td>
+					<td><a
+						th:href="@{'/order_history/detail/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
+						id="btnDelete" title="Detail" class="btn btn-primary">Detail</a> <a
+						th:href="@{'/cancelorder/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
+						id="btnDelete" title="Cancel Order" class="btn btn-danger">Cancel
+							Order</a></td>
+
+				</tr>
+
+			</div>
 		</tbody>
 	</table>
-
-<a th:href="@{'/order_history/'+ ${customer.customer_id}}"
-		id="btnDelete" title="Back" class="btn btn-primary">Back</a>
+	</div>
 </body>
 </html>

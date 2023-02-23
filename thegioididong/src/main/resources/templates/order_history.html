@@ -48,6 +48,9 @@
 	</nav>
 	<br />
 	<br />
+		<a th:href="@{'/search_order_by_date/'+${customer.customer_id}}"
+		id="btnDelete" title="Clear" class="btn btn-success">Search Order By Date</a>
+	<br />
 	<br />
 	<br />
 	<table class="table table-striped table bordered">
@@ -62,23 +65,23 @@
 			</tr>
 		</thead>
 		<tbody>
-		<div align="center">
-			<tr th:each="order: ${orders}">
-				<td th:text="${order.order_id}"></td>
-				<td th:text="${order.order_status}"></td>
-				<td th:text="${order.order_date}"></td>
-				<td th:text="${order.staff_id}"></td>
-				<td th:text="${order.total_amount}"></td>
-				<td><a
-					th:href="@{'/order_history/detail/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
-					id="btnDelete" title="Detail" class="btn btn-primary">Detail</a>
-					<a
-					th:href="@{'/cancelorder/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
-					id="btnDelete" title="Cancel Order" class="btn btn-danger">Cancel Order</a></td>
-					
-			</tr>
-		
-		</div>
+			<div align="center">
+				<tr th:each="order: ${orders}">
+					<td th:text="${order.order_id}"></td>
+					<td th:text="${order.order_status}"></td>
+					<td th:text="${order.order_date}"></td>
+					<td th:text="${order.staff_id}"></td>
+					<td th:text="${order.total_amount}"></td>
+					<td><a
+						th:href="@{'/order_history/detail/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
+						id="btnDelete" title="Detail" class="btn btn-primary">Detail</a> <a
+						th:href="@{'/cancelorder/'+ ${customer.customer_id}+'/'+ ${order.order_id}}"
+						id="btnDelete" title="Cancel Order" class="btn btn-danger">Cancel
+							Order</a></td>
+
+				</tr>
+
+			</div>
 		</tbody>
 	</table>
 	</div>

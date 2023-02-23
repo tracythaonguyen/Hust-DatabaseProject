@@ -325,12 +325,12 @@ $$;
 DROP FUNCTION IF EXISTS  sales.search_order_by_date;
 
 CREATE OR REPLACE function sales.search_order_by_date(customer_id_input BIGINT, order_date_input date)
-RETURNS TABLE(order_id bigint, order_status text, staff_id bigint,total_amount DECIMAL(10,2))
+RETURNS TABLE(order_id bigint, order_status text,order_date date ,staff_id bigint,total_amount DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
 BEGIN
 	return query 
-	select o.order_id, o.order_status, o.staff_id, o.total_amount
+	select o.order_id, o.order_status,o.order_date ,o.staff_id, o.total_amount
 	from sales.view_order_history(customer_id_input) o
 	WHERE o.order_date = order_date_input;
 END;
@@ -372,7 +372,7 @@ group by o.customer_id, i.product_id;
 
 DROP PROCEDURE IF EXISTS  sales.rate_product;
 
-CREATE OR REPLACE PROCEDURE sales.rate_product(customer_id_input BIGINT, product_id_input BIGINT, score decimal(2,1))
+CREATE OR REPLACE PROCEDURE sales.rate_product(customer_id_input BIGINT, product_id_input BIGINT, score DECIMAL(2,1))
 LANGUAGE plpgsql
 AS $$
 declare 
@@ -389,7 +389,7 @@ BEGIN
 				from product.products where product_id = product_id_input;
 			
 			UPDATE product.products
-			SET avg_rating = round(((avg_rating_var * total_review_var) + score)/(total_review_var+1),1)
+			SET avg_rating = (avg_rating_var * total_review_var + score)/(total_review_var+1)
 				,total_review = total_review_var + 1
 			where product_id = product_id_input;
 		end;
@@ -399,8 +399,8 @@ $$;
 
 --select * from sales.product_bought_history;
 --call sales.rate_product(1, 1, 5.0);
---select * from product.products;
---call sales.rate_product(1, 1, 4.0);
+select * from product.products;
+call sales.rate_product(1, 1, 4.0);
 
 
 -- SALE ANALYSIS FUNCTION

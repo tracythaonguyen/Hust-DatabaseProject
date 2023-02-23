@@ -37,7 +37,6 @@ $$;
 --
 -- INSERT DATA --
 --
-
 -- brand (100)
 
 CALL product.new_brand('Samsung');
@@ -247,6 +246,8 @@ $$;
 
 CALL product.generate_new_config();
 
+select * from product.config;
+
 -- SELECT * FROM product.items i
 -- JOIN product.config c on i.config_id=c.config_id
 -- WHERE i.product_id =4;
@@ -305,7 +306,7 @@ end;
 $$ language plpgsql;
 
 
-DROP FUNCTION return_id_category(bigint);
+DROP FUNCTION IF EXISTS return_id_category(bigint);
 CREATE OR REPLACE FUNCTION return_id_category(product_ids BIGINT) RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$

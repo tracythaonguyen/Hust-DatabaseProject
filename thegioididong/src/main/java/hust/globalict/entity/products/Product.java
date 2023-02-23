@@ -1,7 +1,7 @@
 package hust.globalict.entity.products;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -51,8 +51,8 @@ public class Product implements Serializable{
 	@Column(name = "list_price")
 	private double list_price;
 	
-	@Column(name = "avg_rating")
-	private double avg_rating;
+	@Column(name = "avg_rating",precision=2, scale=1)
+	private BigDecimal avg_rating;
 	
 	@Column(name = "total_review")
 	private long total_review;

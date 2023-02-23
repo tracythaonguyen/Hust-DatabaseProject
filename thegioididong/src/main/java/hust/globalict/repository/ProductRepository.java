@@ -15,5 +15,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
 	
 	@Query(value = "CALL product.discontinue_product(:product_id);",nativeQuery = true)
 	void discontinueProductById(@Param("product_id") Long product_id);
-	
+
 }
