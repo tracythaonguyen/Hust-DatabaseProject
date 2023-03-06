@@ -14,7 +14,7 @@ CREATE TABLE sys.accounts (
   account_id BIGSERIAL,
 	user_name VARCHAR(255) unique,
 	password VARCHAR(255),
-	role_id INT CHECK (role_id IN(0,1,2)),
+	role_id INT CHECK (role_id IN(0,1,2,3)),
   PRIMARY KEY (account_id)
 );
 
@@ -76,7 +76,7 @@ CREATE TABLE sales.orders (
 	customer_id BIGINT,
 	order_status INT default 0,
 	order_date DATE,
-	staff_id BIGINT,
+	staff_id BIGINT default NULL,
 	total_amount decimal(10,2),
   CHECK(order_status IN (0, 1, 2)),
   PRIMARY KEY (order_id),
@@ -127,7 +127,7 @@ CREATE TABLE product.products (
 	avg_rating decimal(2,1) default 0,
 	total_review bigint default 0,
 	discontinued boolean default FALSE,
-  quantity BIGINT check (quantity >= 0),
+  quantity BIGINT default 0 check (quantity >= 0),
   PRIMARY KEY (product_id),
   CONSTRAINT fk_brand
     FOREIGN KEY (brand_id)
@@ -212,6 +212,5 @@ CREATE TABLE sales.cart (
 	foreign key (customer_id)
 		references sales.customers(customer_id),
 	foreign key (serial_code)
-		references product.items(serial_code),
-  CONSTRAINT cart_unique UNIQUE (customer_id, serial_code)
+		references product.items(serial_code)
 );
