@@ -23,14 +23,9 @@ $$;
 CREATE OR REPLACE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
-DECLARE product_id_var BIGINT;
 BEGIN
   --INSERT TO TABLE product
   	INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
-  --INSERT TO TABLE STOCK
-  	SELECT p.product_id INTO product_id_var from product.products p 
-	where p.product_name = $1;
- 	INSERT INTO product.stocks VALUES (product_id_var, 0);
 END;
 $$;
 
@@ -182,14 +177,14 @@ CALL product.new_product('Q-Mobile Q EDGY', 19, 8, '2019', 181.45);
 CALL product.new_product('Verizon-47', 20, 7, '2019', 792.37);
 CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 
---delete from product.stocks;
+
 --delete from product.products;
 
 
 -- select * from product.products;
 -- select * from product.brands;
 -- select * from product.categories;
--- select * from product.stocks;
+
 
 -- config
 -- PROCEDURE new_config(color,RAM,ROM,extra_charge)
@@ -264,8 +259,8 @@ BEGIN
 		BEGIN
 			--INSERT into table items
 			INSERT INTO product.items VALUES (serial_code_input, product_id_input,MFG_input,config_id);
-			--Update stock 
-			UPDATE product.stocks 
+			--Update quantity 
+			UPDATE product.products
 			SET quantity= quantity+1 
 			WHERE product_id=product_id_input;
 		END;
@@ -371,7 +366,7 @@ DECLARE
 	serial_code_ids VARCHAR(255);
 	num_stock BIGINT;
 BEGIN
-	SELECT quantity INTO num_stock FROM product.stocks LIMIT 1 OFFSET 1;
+	SELECT quantity INTO num_stock FROM product.products LIMIT 1 OFFSET 1;
 
 	FOR customer_id_input IN 1..1000 LOOP
 		FOR num IN 0..4 LOOP

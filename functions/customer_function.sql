@@ -117,7 +117,7 @@ BEGIN
 		--update item to be not available
 		UPDATE product.items set availability = false where serial_code = serial_code_input;
 		--UPDATE stock
-				UPDATE product.stocks 
+				UPDATE product.products 
 				SET quantity= quantity-1
 				WHERE product_id =(SELECT product_id 
 								  FROM product.items
@@ -160,7 +160,6 @@ $$;
 
 --select * from sales.orders;
 --select * from sales.order_details where order_id = 16;
---select * from product.stocks;
 --select * from sales.coverages where serial_code = '4HX6QQR4';
 --select * from sales.cart;
 --select * from product.items where serial_code = '4HX6QQR4';
@@ -201,7 +200,7 @@ else
         DELETE FROM sales.order_details 
         WHERE serial_code=serial_code_inp;
         --UPDATE stock
-        UPDATE product.stocks 
+        UPDATE product.products 
         SET quantity= quantity+1
         WHERE product_id =(SELECT product_id 
                   FROM product.items

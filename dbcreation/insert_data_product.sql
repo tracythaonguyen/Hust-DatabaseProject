@@ -146,14 +146,13 @@ CALL product.new_product('Q-Mobile Q EDGY', 19, 8, '2019', 181.45);
 CALL product.new_product('Verizon-47', 20, 7, '2019', 792.37);
 CALL product.new_product('Verizon-EN', 20, 1, '2020', 628.29);
 
---delete from product.stocks;
+
 --delete from product.products;
 
 
 -- select * from product.products;
 -- select * from product.brands;
 -- select * from product.categories;
--- select * from product.stocks;
 
 
 --Function to random colour
@@ -281,7 +280,6 @@ $$;
 CALL product.generate_new_item();
 
 -- SELECT * FROM product.items;
--- SELECT * FROM product.stocks;
 
 -- tao them item (20000 items)
 CALL product.generate_new_item();
@@ -304,7 +302,7 @@ DECLARE
 	serial_code_ids VARCHAR(255);
 	num_stock BIGINT;
 BEGIN
-	SELECT quantity INTO num_stock FROM product.stocks LIMIT 1 OFFSET 1;
+	SELECT quantity INTO num_stock FROM product.products LIMIT 1 OFFSET 1;
 
 	FOR customer_id_input IN 1..1000 LOOP
 		FOR num IN 0..4 LOOP

@@ -21,14 +21,9 @@ $$;
 CREATE OR REPLACE PROCEDURE product.new_product(product_name VARCHAR(255), brand_id BIGINT, category_id BIGINT, model_year CHAR(4), list_price DECIMAL(10,2))
 LANGUAGE plpgsql
 AS $$
-DECLARE product_id_var BIGINT;
 BEGIN
   --INSERT TO TABLE product
   	INSERT INTO product.products(product_name, brand_id, category_id, model_year, list_price) VALUES (product_name, brand_id, category_id, model_year, list_price);
-  --INSERT TO TABLE STOCK
-  	SELECT p.product_id INTO product_id_var from product.products p 
-	where p.product_name = $1;
- 	INSERT INTO product.stocks VALUES (product_id_var, 0);
 END;
 $$;
 
@@ -54,7 +49,7 @@ BEGIN
 			--INSERT into table items
 			INSERT INTO product.items VALUES (serial_code_input, product_id_input,MFG_input,config_id);
 			--Update stock 
-			UPDATE product.stocks 
+			UPDATE product.products
 			SET quantity= quantity+1 
 			WHERE product_id=product_id_input;
 		END;
@@ -164,9 +159,8 @@ LANGUAGE plpgsql
 AS $$ 
 BEGIN 
 	RETURN QUERY  
-	select  p.product_id ,p.product_name, s.quantity
-	from product.products p 
-	JOIN product.stocks s ON p.product_id = s.product_id;
+	select  p.product_id ,p.product_name, p.quantity
+	from product.products p;
 END;
 $$;
 
@@ -179,7 +173,7 @@ CREATE PROCEDURE product.update_stock(id BIGINT, amount bigint)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-	UPDATE product.stocks
+	UPDATE product.products
 	SET quantity=amount
 	WHERE product_id = id;
 END;
