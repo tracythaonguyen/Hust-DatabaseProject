@@ -64,8 +64,5 @@ explain select * from product.products where product_id = 46;
 
 explain select * from product.items where serial_code = '4SIZ8MWS';
 
-explain select * from product.stocks where quantity > 50;
-create index quantity_idx on product.stocks(quantity);
-
 explain select * from sales.orders where customer_id = 1;
 create index customer_idx on sales.orders(customer_id);

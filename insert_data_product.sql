@@ -343,7 +343,6 @@ $$;
 CALL product.generate_new_item();
 
 -- SELECT * FROM product.items;
--- SELECT * FROM product.stocks;
 
 -- tao them item (20000 items)
 CALL product.generate_new_item();

@@ -1,12 +1,3 @@
--- Roles
-delete from sys.roles;
-
-insert into sys.roles values (0, 'Customer');
-insert into sys.roles values (1, 'Product Manager');
-insert into sys.roles values (2, 'Sales Manager');
-
--- select * from sys.roles;
-
 BEGIN ;
 call sys.new_account('ktrung1709', '17092002', 2);
 call sys.new_account('thaobaymau', 'thao123', 1);

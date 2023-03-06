@@ -1,10 +1,23 @@
 -- PROCEDURE new_staff(first_name,last_name,phone,email,street,city,active,manager_id)
 -- Auto generate staff_id
-CREATE OR REPLACE PROCEDURE sales.new_staff(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), active boolean,manager_id bigint)
+drop procedure IF EXISTS sales.new_staff;
+CREATE OR REPLACE PROCEDURE sales.new_staff(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), active boolean,manager_id bigint, user_name_input varchar(255),pass_word varchar(255))
 LANGUAGE plpgsql
 AS $$
+DECLARE account_id_input BIGINT;
 BEGIN
-	  INSERT INTO sales.staffs(first_name,last_name,phone,email,street,city,active,manager_id) VALUES (first_name,last_name,phone,email,street,city,active,manager_id);
+	IF user_name_input NOT IN (SELECT user_name FROM sys.accounts)
+	THEN 
+		BEGIN 
+			--INSERT into table accounts (Create an account for customer)
+			INSERT INTO sys.accounts(user_name,password,role_id) VALUES(user_name_input,pass_word,3);
+			SELECT account_id INTO account_id_input FROM sys.accounts WHERE user_name=user_name_input;
+			--INSERT into table staffs
+			INSERT INTO sales.staffs(first_name,last_name,phone,email,street,city,active,manager_id) VALUES (first_name,last_name,phone,email,street,city,active,manager_id);
+		END;
+	ELSE
+			RAISE NOTICE 'Username already been used';
+	END IF;
 END;
 $$;
 
@@ -178,9 +191,12 @@ $$ language plpgsql;
 CREATE OR REPLACE PROCEDURE sales.generate_new_staff()
 LANGUAGE plpgsql
 AS $$
+DECLARE num BIGINT ;
 BEGIN
+	num := 1;
 	FOR cnt in 1..50 LOOP
-    	CALL sales.new_staff(random_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),random_active(),random_manager());
+    	CALL sales.new_staff(random_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),random_active(),random_manager(),'user'||CAST(num AS varchar),random_string(10));
+		num=num+1;
     END LOOP;
 END;
 $$;
