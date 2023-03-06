@@ -4,16 +4,6 @@ create schema sys;
 create schema sales;
 create schema product;
 
--- Name: roles; Type: TABLE
--- 
-DROP TABLE IF EXISTS sys.roles;
-
-CREATE TABLE sys.roles (
-    role_id INT,
-    role_name VARCHAR(255) unique,
-    PRIMARY KEY (role_id)
-);
-
 -- 
 -- Name: account; Type: TABLE
 -- 
@@ -24,11 +14,8 @@ CREATE TABLE sys.accounts (
   account_id BIGSERIAL,
 	user_name VARCHAR(255) unique,
 	password VARCHAR(255),
-	role_id INT,
-  PRIMARY KEY (account_id),
-  CONSTRAINT fk_role
-    FOREIGN KEY (role_id) 
-      REFERENCES sys.roles(role_id)
+	role_id INT CHECK (role_id IN(0,1,2)),
+  PRIMARY KEY (account_id)
 );
 
 -- 
@@ -59,7 +46,7 @@ CREATE TABLE sales.customers (
 DROP TABLE IF EXISTS sales.staffs;
 
 CREATE TABLE sales.staffs (
-  	staff_id BIGSERIAL,
+  staff_id BIGSERIAL,
 	first_name VARCHAR(255),
 	last_name VARCHAR(255),
 	phone VARCHAR(255) unique,
@@ -68,10 +55,14 @@ CREATE TABLE sales.staffs (
 	city VARCHAR(255),
 	active boolean,
   manager_id BIGINT,
+  account_id BIGINT unique,
   PRIMARY KEY (staff_id),
   CONSTRAINT fk_staff_id 
     FOREIGN KEY (manager_id) 
-      REFERENCES sales.staffs(staff_id)
+      REFERENCES sales.staffs(staff_id),
+  CONSTRAINT fk_account
+    FOREIGN KEY (account_id) 
+      REFERENCES sys.accounts(account_id)
 );
 
 -- 
@@ -127,7 +118,7 @@ CREATE TABLE product.categories (
 DROP TABLE IF EXISTS product.products;
 
 CREATE TABLE product.products (
-  	product_id BIGSERIAL,
+  product_id BIGSERIAL,
 	product_name VARCHAR(255) unique,
 	brand_id BIGINT,
 	category_id BIGINT,
@@ -136,6 +127,7 @@ CREATE TABLE product.products (
 	avg_rating decimal(2,1) default 0,
 	total_review bigint default 0,
 	discontinued boolean default FALSE,
+  quantity BIGINT check (quantity >= 0),
   PRIMARY KEY (product_id),
   CONSTRAINT fk_brand
     FOREIGN KEY (brand_id)
@@ -145,21 +137,6 @@ CREATE TABLE product.products (
       REFERENCES product.categories(category_id)
 );
 
-
--- 
--- Name: stocks; Type: TABLE
--- 
-
-DROP TABLE IF EXISTS product.stocks;
-
-CREATE TABLE product.stocks (
-  product_id BIGINT,
-	quantity BIGINT check (quantity >= 0),
-  PRIMARY KEY (product_id),
-  CONSTRAINT fk_stock
-    FOREIGN KEY (product_id)
-      REFERENCES product.products(product_id)
-);
 
 -- 
 -- Name: config; Type: TABLE
@@ -208,6 +185,7 @@ CREATE TABLE sales.order_details (
 	order_id BIGINT,
 	serial_code VARCHAR(255) unique,
 	discount DECIMAL(4,2), check (discount between 0 and 1),
+  coverages_expired_date date,
   PRIMARY KEY (order_detail_id),
   CONSTRAINT fk_serial_code
     FOREIGN KEY (serial_code)
@@ -217,21 +195,6 @@ CREATE TABLE sales.order_details (
       REFERENCES sales.orders(order_id)
 );
 
--- 
--- Name: coverages; Type: TABLE
--- 
-
-DROP TABLE IF EXISTS sales.coverages;
-
-CREATE TABLE sales.coverages (
-  coverage_id BIGSERIAL,
-  serial_code varchar(255) unique,
-  coverages_expired_date date,
-  PRIMARY KEY (coverage_id),
-  CONSTRAINT fk_coverage
-  FOREIGN KEY (serial_code)
-  REFERENCES sales.order_details(serial_code)
-);
 
 -- 
 -- Name: cart; Type: TABLE
@@ -240,18 +203,15 @@ CREATE TABLE sales.coverages (
 DROP TABLE IF EXISTS sales.cart;
 
 CREATE TABLE sales.cart (
-    cart_id bigserial,
+  cart_id bigserial,
 	customer_id bigint,
 	serial_code varchar(255),
-
 	primary key(cart_id),
   CONSTRAINT cart_unique
   UNIQUE (customer_id, serial_code),
 	foreign key (customer_id)
 		references sales.customers(customer_id),
 	foreign key (serial_code)
-		references product.items(serial_code)
+		references product.items(serial_code),
+  CONSTRAINT cart_unique UNIQUE (customer_id, serial_code)
 );
-
-ALTER TABLE sales.cart
-ADD CONSTRAINT cart_unique UNIQUE (customer_id, serial_code);
