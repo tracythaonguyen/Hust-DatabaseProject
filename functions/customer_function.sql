@@ -108,12 +108,9 @@ BEGIN
 
 		total_amount_input=total_amount_input+item_price;
 		--discount=0;
-		INSERT INTO sales.order_details(order_id,serial_code,discount) 
-			VALUES (order_id_input, serial_code_input, 0);
+		INSERT INTO sales.order_details(order_id,serial_code,discount,coverages_expired_date) 
+			VALUES (order_id_input, serial_code_input, 0, CURRENT_DATE + 365);
 		delete from sales.cart c where c.serial_code = serial_code_input;
-		--insert purchased items to coverage
-		insert into sales.coverages(serial_code,coverages_expired_date ) 
-			values (serial_code_input, CURRENT_DATE + 365);
 		--update item to be not available
 		UPDATE product.items set availability = false where serial_code = serial_code_input;
 		--UPDATE stock
@@ -160,7 +157,6 @@ $$;
 
 --select * from sales.orders;
 --select * from sales.order_details where order_id = 16;
---select * from sales.coverages where serial_code = '4HX6QQR4';
 --select * from sales.cart;
 --select * from product.items where serial_code = '4HX6QQR4';
 
@@ -192,9 +188,6 @@ else
         -- UPDATE availability of the item
         UPDATE product.items
         SET availability= TRUE
-        WHERE serial_code=serial_code_inp;
-        --delete coverage 
-        DELETE FROM sales.coverages 
         WHERE serial_code=serial_code_inp;
         -- delete item from order_detail
         DELETE FROM sales.order_details 
