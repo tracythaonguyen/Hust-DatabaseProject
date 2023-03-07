@@ -207,8 +207,8 @@ CREATE TABLE sales.cart (
 	customer_id bigint,
 	serial_code varchar(255),
 	primary key(cart_id),
-  CONSTRAINT cart_unique
-  UNIQUE (customer_id, serial_code),
+  -- CONSTRAINT cart_unique
+  -- UNIQUE (customer_id, serial_code),
 	foreign key (customer_id)
 		references sales.customers(customer_id),
 	foreign key (serial_code)
