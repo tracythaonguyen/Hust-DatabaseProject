@@ -397,9 +397,14 @@ BEGIN
 END;
 $$;
 
+-- generate 500 configs
+CALL product.generate_new_config();
+CALL product.generate_new_config();
+CALL product.generate_new_config();
+CALL product.generate_new_config();
 CALL product.generate_new_config();
 
-select * from product.config;
+-- select * from product.config;
 
 -- SELECT * FROM product.items i
 -- JOIN product.config c on i.config_id=c.config_id
@@ -481,9 +486,15 @@ BEGIN
 END;
 $$;
 
--- generate 5000 items each times
+-- generate 5000*9 items each times
+CALL product.generate_new_item(1,100);
+CALL product.generate_new_item(1,100);
 CALL product.generate_new_item(1,100);
 CALL product.generate_new_item(101,200);
+CALL product.generate_new_item(101,200);
+CALL product.generate_new_item(101,200);
+CALL product.generate_new_item(201,300);
+CALL product.generate_new_item(201,300);
 CALL product.generate_new_item(201,300);
 
 -- SELECT * FROM product.items;
@@ -517,7 +528,6 @@ BEGIN
 END;
 $$;
 
-CALL sales.generate_add_cart();
 
 -- make order (1000 orders ~ 3000 items)
 CREATE OR REPLACE PROCEDURE sales.generate_make_order()
@@ -541,4 +551,6 @@ BEGIN
 END;
 $$;
 
-CALL sales.generate_make_order();
+
+-- CALL sales.generate_add_cart();
+-- CALL sales.generate_make_order();
