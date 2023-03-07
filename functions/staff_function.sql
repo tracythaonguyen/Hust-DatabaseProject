@@ -9,7 +9,6 @@ BEGIN
 	SELECT c.*, a.user_name, a.password
 	FROM sales.staffs c
 	JOIN sys.accounts a ON c.account_id =a.account_id; 
-		 
 END;
 $$;
 
@@ -36,3 +35,24 @@ BEGIN
 	WHERE account_id = (SELECT account_id FROM sales.staffs WHERE staff_id=staff_id_input);
 END;
 $$;
+
+-- Update order status
+DROP PROCEDURE IF EXISTS  sales.update_order_status;
+CREATE OR REPLACE PROCEDURE sales.update_order_status(order_id_input BIGINT, order_status_input int, staff_id_input BIGINT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	if order_id_input not in (select order_id from sales.orders)
+		then raise notice 'There is no such order with that id';
+	else
+	UPDATE sales.orders
+	SET order_status = order_status_input,
+			staff_id = staff_id_input
+	WHERE order_id=order_id_input;
+	end if;
+END;
+$$;
+
+--select * from sales.orders;
+--call sales.update_order_status(9,1);
+--call sales.update_order_status(10,1);

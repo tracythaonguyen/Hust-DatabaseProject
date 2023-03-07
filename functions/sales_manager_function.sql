@@ -1,7 +1,3 @@
-
-
-
-
 --call sales.cancel_order(1, 16);
 --Function view customerinfo
 DROP FUNCTION IF EXISTS sales.view_customer_info();
@@ -19,26 +15,6 @@ END;
 $$;
 
 --SELECT * FROM sales.view_customer_info();
-
-DROP PROCEDURE IF EXISTS  sales.update_order_status;
-
-CREATE OR REPLACE PROCEDURE sales.update_order_status(order_id_input BIGINT, order_status_input int)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	if order_id_input not in (select order_id from sales.orders)
-		then raise notice 'There is no such order with that id';
-	else
-	UPDATE sales.orders
-	SET order_status = order_status_input
-	WHERE order_id=order_id_input;
-	end if;
-END;
-$$;
-
---select * from sales.orders;
---call sales.update_order_status(9,1);
---call sales.update_order_status(10,1);
 
 
 -- SALE ANALYSIS FUNCTION

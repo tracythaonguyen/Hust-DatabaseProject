@@ -331,26 +331,6 @@ $$;
 --select * from sales.search_order_by_date(3, '2023-02-16');
 --select * from sales.orders;
 
-DROP PROCEDURE IF EXISTS  sales.update_order_status;
-
-CREATE OR REPLACE PROCEDURE sales.update_order_status(order_id_input BIGINT, order_status_input int)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	if order_id_input not in (select order_id from sales.orders)
-		then raise notice 'There is no such order with that id';
-	else
-	UPDATE sales.orders
-	SET order_status = order_status_input
-	WHERE order_id=order_id_input;
-	end if;
-END;
-$$;
-
---select * from sales.orders;
---call sales.update_order_status(9,1);
---call sales.update_order_status(10,1);
-
 -- lịch sử sản phẩm của từng khách hàng sẽ hay dùng nên t lập 1 view tổng hợp
 
 create view sales.product_bought_history as
@@ -391,8 +371,8 @@ $$;
 
 --select * from sales.product_bought_history;
 --call sales.rate_product(1, 1, 5.0);
-select * from product.products;
-call sales.rate_product(1, 1, 4.0);
+-- select * from product.products;
+-- call sales.rate_product(1, 1, 4.0);
 
 
 -- SALE ANALYSIS FUNCTION

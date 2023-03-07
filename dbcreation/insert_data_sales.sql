@@ -13,7 +13,7 @@ BEGIN
 			INSERT INTO sys.accounts(user_name,password,role_id) VALUES(user_name_input,pass_word,3);
 			SELECT account_id INTO account_id_input FROM sys.accounts WHERE user_name=user_name_input;
 			--INSERT into table staffs
-			INSERT INTO sales.staffs(first_name,last_name,phone,email,street,city,active,manager_id) VALUES (first_name,last_name,phone,email,street,city,active,manager_id);
+			INSERT INTO sales.staffs(first_name,last_name,phone,email,street,city,active,manager_id,account_id) VALUES (first_name,last_name,phone,email,street,city,active,manager_id,account_id_input);
 		END;
 	ELSE
 			RAISE NOTICE 'Username already been used';
@@ -188,6 +188,7 @@ begin
 end;
 $$ language plpgsql;
 
+drop procedure IF EXISTS sales.generate_new_staff();
 CREATE OR REPLACE PROCEDURE sales.generate_new_staff()
 LANGUAGE plpgsql
 AS $$
@@ -195,7 +196,7 @@ DECLARE num BIGINT ;
 BEGIN
 	num := 1;
 	FOR cnt in 1..50 LOOP
-    	CALL sales.new_staff(random_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),random_active(),random_manager(),'user'||CAST(num AS varchar),random_string(10));
+    	CALL sales.new_staff(random_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),random_active(),random_manager(),'user'||CAST(num AS varchar)||random_string(2),random_string(10));
 		num=num+1;
     END LOOP;
 END;
@@ -266,7 +267,7 @@ begin
 end;
 $$ language plpgsql;
 
-
+drop procedure IF EXISTS sales.generate_new_customer();
 CREATE OR REPLACE PROCEDURE sales.generate_new_customer()
 LANGUAGE plpgsql
 AS $$
@@ -274,7 +275,7 @@ DECLARE num BIGINT ;
 BEGIN
 	num := 1;
 	FOR cnt in 1..1000 LOOP
-    	CALL sales.new_customer(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar),random_string(10));
+    	CALL sales.new_customer(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar)||random_string(2),random_string(10));
 		num=num+1;
     END LOOP;
 END;
@@ -286,21 +287,6 @@ CALL sales.generate_new_customer();
 SELECT * from sales.customers;
 SELECT * FROM sys.accounts;
 ROLLBACK ;
-
-
---Generate order 
-DROP PROCEDURE IF EXISTS sales.generate_new_order;
-CREATE OR REPLACE PROCEDURE sales.generate_new_order()
-LANGUAGE plpgsql
-AS $$
-DECLARE num BIGINT ;
-BEGIN
-	num := 1;
-	FOR cnt in 1..1000 LOOP
-    	
-    END LOOP;
-END;
-$$;
 
 
 
