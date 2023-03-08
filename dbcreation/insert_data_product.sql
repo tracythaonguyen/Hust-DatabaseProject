@@ -498,6 +498,7 @@ CALL product.generate_new_item(201,300);
 CALL product.generate_new_item(201,300);
 
 -- SELECT * FROM product.items;
+-- SELECT * FROM product.items;
 
 CREATE OR REPLACE FUNCTION random_between(low INT ,high INT) 
 RETURNS INT AS
@@ -537,20 +538,21 @@ DECLARE
 	staff_id_input BIGINT;
 	num BIGINT;
 BEGIN	
-	FOR customer_id_input IN 1..500 LOOP
-		SELECT random_between(1,25) INTO num;
-		BEGIN 
-			SELECT staff_id INTO staff_id_input FROM sales.staffs WHERE active = TRUE LIMIT 1 OFFSET num;
-			CALL sales.make_order_offline(customer_id_input, staff_id_input);
-		END;
-	END LOOP;
+-- 	FOR customer_id_input IN 1..500 LOOP
+-- 		SELECT random_between(1,25) INTO num;
+-- 		BEGIN 
+-- 			SELECT staff_id INTO staff_id_input FROM sales.staffs WHERE active = TRUE LIMIT 1 OFFSET num;
+-- 			CALL sales.make_order_offline(customer_id_input, staff_id_input);
+-- 		END;
+-- 	END LOOP;
 
 	FOR customer_id_input IN 501..1000 LOOP
-		CALL sales.make_order_online(customer_id_input);
+		CALL sales.make_order(customer_id_input);
 	END LOOP;
 END;
 $$;
 
 
 -- CALL sales.generate_add_cart();
+-- select * from sales.cart;
 -- CALL sales.generate_make_order();

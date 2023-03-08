@@ -1,27 +1,3 @@
--- PROCEDURE new_staff(first_name,last_name,phone,email,street,city,active,manager_id)
--- Auto generate staff_id
-drop procedure IF EXISTS sales.new_staff;
-CREATE OR REPLACE PROCEDURE sales.new_staff(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), active boolean,manager_id bigint, user_name_input varchar(255),pass_word varchar(255))
-LANGUAGE plpgsql
-AS $$
-DECLARE account_id_input BIGINT;
-BEGIN
-	IF user_name_input NOT IN (SELECT user_name FROM sys.accounts)
-	THEN 
-		BEGIN 
-			--INSERT into table accounts (Create an account for customer)
-			INSERT INTO sys.accounts(user_name,password,role_id) VALUES(user_name_input,pass_word,3);
-			SELECT account_id INTO account_id_input FROM sys.accounts WHERE user_name=user_name_input;
-			--INSERT into table staffs
-			INSERT INTO sales.staffs(first_name,last_name,phone,email,street,city,active,manager_id,account_id) VALUES (first_name,last_name,phone,email,street,city,active,manager_id,account_id_input);
-		END;
-	ELSE
-			RAISE NOTICE 'Username already been used';
-	END IF;
-END;
-$$;
-
-
 --Function to random phonenumber
 Create or replace function random_phonenumber() returns varchar as
 $$
@@ -205,32 +181,9 @@ $$;
 -- BEGIN;
 -- TRUNCATE TABLE sales.staffs RESTART IDENTITY CASCADE;
 CALL sales.generate_new_staff();
-CALL sales.generate_new_staff();
+-- CALL sales.generate_new_staff();
 -- SELECT * from sales.staffs;
 -- ROLLBACK ;
-
--- -- PROCEDURE new_customer(first_name,last_name,phone,email,street,city, username, password)
--- -- Auto generate customer_id
-drop procedure IF EXISTS sales.new_customer;
-CREATE OR REPLACE PROCEDURE sales.new_customer(first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
-LANGUAGE plpgsql
-AS $$
-DECLARE account_id_input BIGINT;
-BEGIN
-	IF user_name_input NOT IN (SELECT user_name FROM sys.accounts)
-	THEN 
-		BEGIN 
-			--INSERT into table accounts (Create an account for customer)
-			INSERT INTO sys.accounts(user_name,password,role_id) VALUES(user_name_input,pass_word,0);
-			SELECT account_id INTO account_id_input FROM sys.accounts WHERE user_name=user_name_input;
-			--INSERT into table customers
-			INSERT INTO sales.customers(first_name,last_name,phone,email,street,city,account_id) VALUES (first_name,last_name,phone,email,street,city,account_id_input);
-		END;
-	ELSE
-			RAISE NOTICE 'Username already been used';
-	END IF;
-END;
-$$;
 
 
 --Function to random customer firstname
@@ -276,7 +229,7 @@ DECLARE num BIGINT ;
 BEGIN
 	num := 1;
 	FOR cnt in 1..1000 LOOP
-    	CALL sales.new_customer(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar)||random_string(2),random_string(10));
+    	CALL sys.new_customer(random_customer_firstname(),random_lastname(),random_phonenumber(),random_string(10)||'@gmail.com',random_street(),random_city(),'user'||CAST(num AS varchar)||random_string(2),random_string(10));
 		num=num+1;
     END LOOP;
 END;
@@ -288,6 +241,20 @@ CALL sales.generate_new_customer();
 -- SELECT * from sales.customers;
 -- SELECT * FROM sys.accounts;
 -- ROLLBACK ;
+
+-- select * from sales.cart;
+-- select * from product.items where availability = false;
+-- call sales.add_to_cart(1, 'LQ6CACK3');
+-- call sales.add_to_cart(1, '4LK6HQGC');
+-- select * from sales.view_cart(1);
+-- call sales.make_order(1);
+-- select * from product.products where product_id = 1;
+-- select product_id, quantity from product.products;
+-- select * from sales.orders;
+-- select * from sales.order_details;
+-- call sales.cancel_order(1, 1);
+-- call sales.process_order(2, 2);
+
 
 
 

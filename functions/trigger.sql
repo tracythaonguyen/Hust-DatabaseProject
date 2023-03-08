@@ -10,12 +10,43 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER add_item
+CREATE OR REPLACE TRIGGER add_item
   AFTER INSERT
   ON product.items
   FOR EACH ROW
   EXECUTE PROCEDURE add_item_trigger();
-  
+
+CREATE OR REPLACE FUNCTION update_item_trigger()
+  RETURNS TRIGGER 
+  LANGUAGE PLPGSQL
+  AS $$
+BEGIN
+	IF OLD.availability = FALSE
+	THEN
+	BEGIN
+		UPDATE product.products
+		SET quantity=quantity+1
+		WHERE product_id=NEW.product_id;
+	END;
+	ELSE
+		UPDATE product.products
+		SET quantity=quantity-1
+		WHERE product_id=NEW.product_id;
+	END IF;
+	RETURN NEW;
+END;
+$$;
+
+-- select * from product.items where serial_code = 'ZQBA7OI4';
+-- update product.items set availability = true where serial_code = 'ZQBA7OI4';
+-- select * from product.products where product_id = 1;
+
+CREATE OR REPLACE TRIGGER update_item
+  AFTER UPDATE OF availability
+  ON product.items
+  FOR EACH ROW
+  EXECUTE PROCEDURE update_item_trigger();
+
 DROP FUNCTION IF EXISTS add_order_details_trigger CASCADE ;
 CREATE OR REPLACE FUNCTION add_order_details_trigger()
   RETURNS TRIGGER 
@@ -103,4 +134,3 @@ CREATE TRIGGER delete_order
   ON sales.orders
   FOR EACH ROW
   EXECUTE PROCEDURE delete_order_trigger(); 
-  

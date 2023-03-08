@@ -45,14 +45,7 @@ BEGIN
 	-- CHECK FOR DUPLICATE serial code and product_id
 	IF NOT EXISTS (SELECT * FROM product.items WHERE serial_code = serial_code_input) AND EXISTS (SELECT * FROM product.products  WHERE product_id = product_id_input)
 	THEN
-		BEGIN
-			--INSERT into table items
 			INSERT INTO product.items VALUES (serial_code_input, product_id_input,MFG_input,config_id);
-			--Update stock 
-			UPDATE product.products
-			SET quantity= quantity+1 
-			WHERE product_id=product_id_input;
-		END;
 	ELSE
 		RAISE NOTICE 'Error.... There is something wrong with your adding data!';
 	END IF;

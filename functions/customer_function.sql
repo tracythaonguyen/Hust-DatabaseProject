@@ -1,3 +1,41 @@
+--Function view customerinfo
+DROP FUNCTION IF EXISTS sales.view_customer_info();
+CREATE OR REPLACE FUNCTION sales.view_customer_info()  
+RETURNS TABLE(customer_id BIGINT,first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255),account_id bigint, user_name varchar(255),pass_word varchar(255))
+LANGUAGE plpgsql
+AS $$ 
+BEGIN 
+	RETURN QUERY  
+	SELECT c.*, a.user_name, a.password
+	FROM sales.customers c
+	JOIN sys.accounts a ON c.account_id =a.account_id; 
+		 
+END;
+$$;
+
+--Procedure update info 
+DROP PROCEDURE IF EXISTS  sales.update_info;
+
+CREATE OR REPLACE PROCEDURE sales.update_info(customer_id_input BIGINT,first_name_inp VARCHAR(255),last_name_inp VARCHAR(255), phone_inp VARCHAR(255), email_inp VARCHAR(255), street_inp VARCHAR(255), city_inp VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	UPDATE sales.customers
+	SET first_name = first_name_inp,
+		last_name = last_name_inp,
+		phone = phone_inp,
+		email = email_inp,
+		street = street_inp,
+		city = city_inp
+	WHERE customer_id=customer_id_input;
+	
+	UPDATE sys.accounts
+	SET user_name = user_name_input,
+		password=pass_word
+	WHERE account_id = (SELECT account_id FROM sales.customers WHERE customer_id=customer_id_input);
+END;
+$$;
+
 -- PROCEDURE add_to_cart
 DROP PROCEDURE IF EXISTS  sales.add_to_cart;
 CREATE OR REPLACE PROCEDURE sales.add_to_cart(customer_id_input BIGINT,serial_code_input VARCHAR(255))
@@ -66,28 +104,24 @@ $$;
 
 
 -- make order offline
-DROP PROCEDURE IF EXISTS  sales.make_order_offline;
+DROP PROCEDURE IF EXISTS  sales.make_order;
 
-CREATE OR REPLACE PROCEDURE sales.make_order_offline(customer_id_input BIGINT, staff_id_input BIGINT)
+CREATE OR REPLACE PROCEDURE sales.make_order(customer_id_input BIGINT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
 order_id_input BIGINT ; 
 serial_code_input varchar(255) ; 
-total_amount_input decimal(10, 2) := 0;
-item_price decimal(10, 2);
+-- total_amount_input decimal(10, 2) := 0;
+-- item_price decimal(10, 2);
 BEGIN
-	-- Check if staff active
-	if staff_id_input is not NULL 
-	and (select active from sales.staffs s where s.staff_id = staff_id_input) is FALSE
-		then RAISE NOTICE 'Staff no longer works';
 	-- Check for empty cart
-	elsif NOT EXISTS (select cart_id from sales.cart c where c.customer_id = customer_id_input) 
+	if NOT EXISTS (select cart_id from sales.cart c where c.customer_id = customer_id_input) 
 		then RAISE NOTICE 'Nothing in the cart, can not make order';	
 	else
 	begin
 
-	INSERT INTO sales.orders(customer_id,order_status,order_date,staff_id) VALUES (customer_id_input,0,CURRENT_DATE,staff_id_input);
+	INSERT INTO sales.orders(customer_id,order_status,order_date,staff_id, total_amount) VALUES (customer_id_input,0,CURRENT_DATE,NULL, 0);
 	
 	-- find the latest order
 	SELECT order_id INTO order_id_input 
@@ -99,35 +133,35 @@ BEGIN
 		FROM sales.cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	--INSERT INTO TABLE order_details
     while serial_code_input is not null loop
-		--Caculating money of the item
-		SELECT p.list_price +c.extra_charge INTO item_price 
-		FROM product.items i
-		JOIN product.products p on p.product_id=i.product_id 
-		JOIN product.config c on c.config_id=i.config_id 
-		WHERE i.serial_code=serial_code_input; 
+-- 		--Caculating money of the item
+-- 		SELECT p.list_price +c.extra_charge INTO item_price 
+-- 		FROM product.items i
+-- 		JOIN product.products p on p.product_id=i.product_id 
+-- 		JOIN product.config c on c.config_id=i.config_id 
+-- 		WHERE i.serial_code=serial_code_input; 
 
-		total_amount_input=total_amount_input+item_price;
+-- 		total_amount_input=total_amount_input+item_price;
 		--discount=0;
 		INSERT INTO sales.order_details(order_id,serial_code,discount,coverages_expired_date) 
 			VALUES (order_id_input, serial_code_input, 0, CURRENT_DATE + 365);
 		delete from sales.cart c where c.serial_code = serial_code_input;
 		--update item to be not available
-		UPDATE product.items set availability = false where serial_code = serial_code_input;
-		--UPDATE stock
-				UPDATE product.products 
-				SET quantity= quantity-1
-				WHERE product_id =(SELECT product_id 
-								  FROM product.items
-								  WHERE serial_code=serial_code_input);
+-- 		UPDATE product.items set availability = false where serial_code = serial_code_input;
+-- 		--UPDATE stock
+-- 				UPDATE product.products 
+-- 				SET quantity= quantity-1
+-- 				WHERE product_id =(SELECT product_id 
+-- 								  FROM product.items
+-- 								  WHERE serial_code=serial_code_input);
 		--increment next items
 		SELECT c.serial_code INTO serial_code_input 
 		FROM sales.cart c WHERE c.customer_id=customer_id_input order by c.serial_code limit 1;
 	end loop;
 	
-	-- Update orders
-	UPDATE sales.orders
-	SET total_amount=total_amount_input
-	WHERE order_id=order_id_input;
+-- 	-- Update orders
+-- 	UPDATE sales.orders
+-- 	SET total_amount=total_amount_input
+-- 	WHERE order_id=order_id_input;
 	end;
 	end if;
 END;
@@ -139,16 +173,6 @@ $$;
 --call sales.add_to_cart(1, '4HX6QQR4');
 --call sales.make_order_online(1);
 
--- PROCEDURE make_order_online
-DROP PROCEDURE IF EXISTS  sales.make_order_online;
-
-CREATE OR REPLACE PROCEDURE sales.make_order_online(customer_id_input BIGINT)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	call sales.make_order_offline(customer_id_input, NULL);
-END;
-$$;
 
 --BEGIN ; 
 --call sales.make_order_offline(1, NULL);
@@ -185,19 +209,19 @@ else
     BEGIN
       SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
       while serial_code_inp is not null loop
-        -- UPDATE availability of the item
-        UPDATE product.items
-        SET availability= TRUE
-        WHERE serial_code=serial_code_inp;
+--         -- UPDATE availability of the item
+--         UPDATE product.items
+--         SET availability= TRUE
+--         WHERE serial_code=serial_code_inp;
         -- delete item from order_detail
         DELETE FROM sales.order_details 
         WHERE serial_code=serial_code_inp;
-        --UPDATE stock
-        UPDATE product.products 
-        SET quantity= quantity+1
-        WHERE product_id =(SELECT product_id 
-                  FROM product.items
-                  WHERE serial_code=serial_code_inp);
+--         --UPDATE stock
+--         UPDATE product.products 
+--         SET quantity= quantity+1
+--         WHERE product_id =(SELECT product_id 
+--                   FROM product.items
+--                   WHERE serial_code=serial_code_inp);
         SELECT serial_code INTO serial_code_inp FROM sales.order_details WHERE order_id= order_id_input LIMIT 1;
       end loop;
       UPDATE sales.orders
@@ -215,46 +239,9 @@ $$;
 
 
 --call sales.cancel_order(1, 16);
---Function view customerinfo
-DROP FUNCTION IF EXISTS sales.view_customer_info();
-CREATE OR REPLACE FUNCTION sales.view_customer_info()  
-RETURNS TABLE(customer_id BIGINT,first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255),account_id bigint, user_name varchar(255),pass_word varchar(255))
-LANGUAGE plpgsql
-AS $$ 
-BEGIN 
-	RETURN QUERY  
-	SELECT c.*, a.user_name, a.password
-	FROM sales.customers c
-	JOIN sys.accounts a ON c.account_id =a.account_id; 
-		 
-END;
-$$;
 
 --SELECT * FROM sales.view_customer_info();
 
-
---Procedure update info 
-DROP PROCEDURE IF EXISTS  sales.update_info;
-
-CREATE OR REPLACE PROCEDURE sales.update_info(customer_id_input BIGINT,first_name_inp VARCHAR(255),last_name_inp VARCHAR(255), phone_inp VARCHAR(255), email_inp VARCHAR(255), street_inp VARCHAR(255), city_inp VARCHAR(255), user_name_input varchar(255),pass_word varchar(255))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	UPDATE sales.customers
-	SET first_name = first_name_inp,
-		last_name = last_name_inp,
-		phone = phone_inp,
-		email = email_inp,
-		street = street_inp,
-		city = city_inp
-	WHERE customer_id=customer_id_input;
-	
-	UPDATE sys.accounts
-	SET user_name = user_name_input,
-		password=pass_word
-	WHERE account_id = (SELECT account_id FROM sales.customers WHERE customer_id=customer_id_input);
-END;
-$$;
 -- CALL sales.update_info(1,'Minh','Do','0865943283','minhdotpc@gmail.com','Tran Nguyen Han','Hai Phong','minhdo','220702');
 -- select * from sales.view_customer_info() WHERE customer_id=2;
 -- select * from sys.accounts;
@@ -373,105 +360,3 @@ $$;
 --call sales.rate_product(1, 1, 5.0);
 -- select * from product.products;
 -- call sales.rate_product(1, 1, 4.0);
-
-
--- SALE ANALYSIS FUNCTION
--- số lượng bán ra của từng sản phẩm
-DROP FUNCTION IF EXISTS  sales.product_total_sold;
-
-CREATE OR REPLACE function sales.product_total_sold()
-RETURNS TABLE(product_id bigint, product_name varchar(255), total_sold bigint)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	return query 
-	select pb.product_id, p.product_name, sum(pb.total_bought)::bigint total_sold
-	from sales.product_bought_history pb
-	inner join product.products p on p.product_id = pb.product_id
-	group by pb.product_id, p.product_name
-	order by total_sold desc;
-END;
-$$;
-
---select * from sales.product_total_sold();
---select * from sales.product_bought_history;
-
--- doanh thu của từng sản phẩm
-DROP function IF EXISTS  sales.product_revenue;
-
-CREATE OR REPLACE function sales.product_revenue()
-RETURNS TABLE(product_id bigint, product_name varchar(255), total_revenue decimal(10,2))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	return query 
-	select p.product_id, p.product_name, sum(p.list_price + c.extra_charge) total_revenue
-	from sales.order_details od
-	inner join product.items i on od.serial_code = i.serial_code
-	inner join product.products p on i.product_id = p.product_id
-	inner join product.config c on c.config_id = i.config_id
-	group by p.product_id, p.product_name
-	order by total_revenue desc;
-END;
-$$;
-
---select * from sales.order_details;
---select * from product.products;
---select * from sales.product_revenue();
-
-DROP function IF EXISTS  sales.customer_revenue;
-
-CREATE OR REPLACE function sales.customer_revenue()
-RETURNS TABLE(customer_id bigint, customer_name text, total_revenue decimal(10,2))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	return query 
-	select c.customer_id, c.first_name || ' ' || c.last_name fullname, sum (total_amount) as total_revenue
-	from sales.customers c
-	inner join sales.orders o on c.customer_id = o.customer_id
-	where o.order_status != 2
-	group by c.customer_id, c.first_name, c.last_name
-	order by total_revenue desc;
-END;
-$$;
-
---select * from sales.customer_revenue();
-
-DROP function IF EXISTS  sales.staff_revenue;
-
-CREATE OR REPLACE function sales.staff_revenue()
-RETURNS TABLE(staff_id bigint, staff_name text, total_revenue decimal(10,2))
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	return query 
-	select s.staff_id, s.first_name || ' ' || s.last_name fullname, sum (total_amount) as total_revenue
-	from sales.staffs s
-	inner join sales.orders o on s.staff_id = o.staff_id
-	where o.order_status != 2
-	group by s.staff_id, s.first_name, s.last_name
-	order by total_revenue desc;
-END;
-$$;
-
----select * from sales.orders;
---select * from sales.staff_revenue();
-
-
---Function get Customer By Id
-DROP function IF EXISTS  sales.get_customer_by_account_id;
-
-CREATE OR REPLACE function sales.get_customer_by_account_id(id bigint)
-RETURNS TABLE(customer_id BIGINT,first_name VARCHAR(255),last_name VARCHAR(255), phone VARCHAR(255), email VARCHAR(255), street VARCHAR(255), city VARCHAR(255),account_id bigint)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	return query 
-	select * 
-	FROM sales.customers c
-	WHERE c.account_id = id;
-END;
-$$;
-
--- SELECT * FROM sales.get_customer_by_account_id(2);
